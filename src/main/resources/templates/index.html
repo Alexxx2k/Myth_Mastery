@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Автосервис - Главная</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+<div class="container">
+    <div class="user-info">
+        <div class="user-details">
+            Вы вошли как: <strong sec:authentication="name"></strong>
+            <span class="user-role">
+                (<span sec:authentication="principal.authorities"></span>)
+            </span>
+        </div>
+        <a href="#" th:href="@{/logout}" class="logout-btn">Выйти</a>
+    </div>
+
+    <h1>Автосервис & MythMastery</h1>
+    <p style="text-align: center;">Система управления автопарком и мифологической атрибутикой</p>
+
+    <div class="menu">
+        <div sec:authorize="hasAnyRole('ADMIN', 'USER')">
+            <a th:href="@{/personal}">Таблица персонала</a>
+            <a th:href="@{/autos}">Таблица автомобилей</a>
+            <a th:href="@{/routes}">Таблица маршрутов</a>
+            <a th:href="@{/journal}">Журнал рейсов</a>
+            <a th:href="@{/mythologies}">Мифологии</a> <!-- НОВАЯ ССЫЛКА -->
+        </div>
+
+        <!-- Только для ADMIN -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/users}" class="admin-only">Управление пользователями</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

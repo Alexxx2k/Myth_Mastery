@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Создание пользователя - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/users}" class="back-link">← Назад к списку пользователей</a>
+    <h1>Создание нового пользователя</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/users/create}">
+        <div class="form-group">
+            <label for="username">Имя пользователя *</label>
+            <input type="text" id="username" name="username"
+                   th:value="${user.username}"
+                   required
+                   placeholder="Введите уникальное имя пользователя">
+            <div class="form-help">Имя пользователя должно быть уникальным</div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Пароль *</label>
+            <input type="password" id="password" name="password"
+                   required
+                   placeholder="Введите пароль (минимум 4 символа)">
+            <div class="form-help">Пароль должен содержать минимум 4 символа</div>
+        </div>
+
+        <div class="form-group">
+            <label for="role">Роль *</label>
+            <select id="role" name="role" required>
+                <option value="">Выберите роль</option>
+                <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">ADMIN - Администратор</option>
+                <option value="OPERATOR" th:selected="${user.role == 'OPERATOR'}">OPERATOR - Оператор</option>
+                <option value="USER" th:selected="${user.role == 'USER' or user.role == null}">USER - Пользователь</option>
+            </select>
+            <div class="role-description">
+                <strong>ADMIN:</strong> Полный доступ ко всем функциям<br>
+                <strong>OPERATOR:</strong> Управление данными системы<br>
+                <strong>USER:</strong> Базовый доступ
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Создать пользователя</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

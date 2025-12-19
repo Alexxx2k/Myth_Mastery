@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавить маршрут - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/routes}" class="btn btn-secondary">← Назад</a>
+    <h1>Добавить маршрут</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/routes}">
+        <div class="form-group">
+            <label for="name">Название маршрута *</label>
+            <input type="text" id="name" name="name" required
+                   placeholder="Например: Центр - Южный район">
+        </div>
+
+        <div>
+            <button type="submit" class="btn">Добавить маршрут</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,69 +1,50 @@
-CREATE TABLE mythology (
+
+CREATE TABLE auto_personal (
     id SERIAL PRIMARY KEY,
-	name VARCHAR(50)
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    father_name VARCHAR(50)
 );
 
-CREATE TABLE category (
+CREATE TABLE auto (
     id SERIAL PRIMARY KEY,
-	name VARCHAR(50),
-	hazard VARCHAR(50),
-	rarity VARCHAR(50)
+    num VARCHAR(20) NOT NULL UNIQUE,
+    color VARCHAR(30) NOT NULL,
+    mark VARCHAR(30) NOT NULL,
+    personal_id INTEGER NOT NULL
 );
 
-CREATE TABLE city (
+CREATE TABLE routes (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-	delivery_time INT
+    name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE step (
+CREATE TABLE journal (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-	description VARCHAR(100)
+    time_in TIMESTAMP(0),
+    auto_id INTEGER NOT NULL,
+    route_id INTEGER NOT NULL,
+    time_out TIMESTAMP(0)
 );
 
-CREATE TABLE product (
+CREATE TABLE public.users (
     id SERIAL PRIMARY KEY,
-    category_id INT NOT NULL,
-    mythology_id INT NOT NULL,
-	name VARCHAR(50),
-    price DECIMAL(8, 2),
-	description VARCHAR(100),
-	pic VARCHAR(150),
-    FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE,
-    FOREIGN KEY (mythology_id) REFERENCES mythology (id) ON DELETE CASCADE
+    username character varying(50) NOT NULL UNIQUE,
+    password_hash character varying(255) NOT NULL,
+    role character varying(20) NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE customer (
-    id SERIAL PRIMARY KEY,
-	city_id INT NOT NULL,
-	name VARCHAR(50) NOT NULL,
-    email VARCHAR(50),
-    FOREIGN KEY (city_id) REFERENCES city (id)
-);
 
-CREATE TABLE buy_step (
-    id SERIAL PRIMARY KEY,
-    step_id INT NOT NULL,
-	date_start DATE,
-	date_end DATE,
-    FOREIGN KEY (step_id) REFERENCES step (id)
-);
+ALTER TABLE auto
+    ADD CONSTRAINT fk_auto_auto_personal
+        FOREIGN KEY (personal_id) REFERENCES auto_personal(id) ON DELETE CASCADE;
 
-CREATE TABLE buy (
-    id SERIAL PRIMARY KEY,
-	buy_step_id INT NOT NULL,
-	customer_id INT NOT NULL,
-    description VARCHAR(100),
-    FOREIGN KEY (customer_id) REFERENCES customer (id),
-    FOREIGN KEY (buy_step_id) REFERENCES buy_step (id)
-);
+ALTER TABLE journal
+    ADD CONSTRAINT fk_journal_auto
+        FOREIGN KEY (auto_id) REFERENCES auto(id) ON DELETE CASCADE;
 
-CREATE TABLE buy_product (
-    id SERIAL PRIMARY KEY,
-    product_id INT NOT NULL,
-    buy_id INT NOT NULL,
-	amount INT,
-	FOREIGN KEY (product_id) REFERENCES product (id),
-	FOREIGN KEY (buy_id) REFERENCES buy (id)
-);
+ALTER TABLE journal
+    ADD CONSTRAINT fk_journal_routes
+        FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE;

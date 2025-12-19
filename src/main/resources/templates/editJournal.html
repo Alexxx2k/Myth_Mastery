@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать запись журнала - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/journal}" class="back-link">← Назад к журналу</a>
+    <h1>Редактировать запись журнала</h1>
+
+    <!-- Сообщения об успехе/ошибке -->
+    <div th:if="${message}" th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <!-- Текущие значения -->
+    <div class="current-values" th:if="${journal}">
+        <h3>Текущие данные записи</h3>
+        <p><strong>ID записи:</strong> <span th:text="${journal.id}"></span></p>
+        <p><strong>Автомобиль ID:</strong> <span th:text="${journal.autoId}"></span></p>
+        <p><strong>Маршрут ID:</strong> <span th:text="${journal.routeId}"></span></p>
+        <p><strong>Время выезда:</strong> <span th:text="${journal.timeOut}"></span></p>
+        <p><strong>Время возврата:</strong>
+            <span th:if="${journal.timeIn != null}" th:text="${journal.timeIn}"></span>
+            <span th:if="${journal.timeIn == null}" class="status-active">В рейсе</span>
+        </p>
+    </div>
+
+    <form method="post" th:action="@{/journal/update/{id}(id=${journal.id})}">
+
+        <div class="form-section">
+            <h3>Автомобиль и маршрут</h3>
+
+            <div class="form-group">
+                <label for="autoId">Автомобиль:</label>
+                <select id="autoId" name="autoId">
+                    <option value="">-- Без изменений --</option>
+                    <option th:each="auto : ${autoList}"
+                            th:value="${auto.id}"
+                            th:selected="${journal.autoId == auto.id}"
+                            th:text="${auto.num + ' (' + auto.mark + ')'}">
+                    </option>
+                </select>
+                <div class="info-text">Текущее значение: ID <span th:text="${journal.autoId}"></span></div>
+            </div>
+
+            <div class="form-group">
+                <label for="routeId">Маршрут:</label>
+                <select id="routeId" name="routeId">
+                    <option value="">-- Без изменений --</option>
+                    <option th:each="route : ${routeList}"
+                            th:value="${route.id}"
+                            th:selected="${journal.routeId == route.id}"
+                            th:text="${route.name}">
+                    </option>
+                </select>
+                <div class="info-text">Текущее значение: ID <span th:text="${journal.routeId}"></span></div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Время рейса</h3>
+
+            <div class="form-group">
+                <label for="timeOut">Время выезда:</label>
+                <input type="datetime-local" id="timeOut" name="timeOut"
+                       th:value="${journal.timeOut != null} ? ${journal.timeOut} : ''">
+                <div class="info-text">
+                    Текущее: <span th:text="${journal.timeOut}"></span><br>
+                    Оставьте пустым для сохранения текущего значения
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="timeIn">Время возврата:</label>
+                <input type="datetime-local" id="timeIn" name="timeIn"
+                       th:value="${journal.timeIn != null} ? ${journal.timeIn} : ''">
+                <div class="info-text">
+                    <span th:if="${journal.timeIn == null}">Рейс еще активен</span>
+                    <span th:if="${journal.timeIn != null}">Текущее: <span th:text="${journal.timeIn}"></span></span><br>
+                    Оставьте пустым для сохранения текущего значения<br>
+                    Для завершения рейса укажите время возврата
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

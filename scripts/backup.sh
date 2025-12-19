@@ -2,7 +2,8 @@
 CONTAINER_NAME="postgres_container"
 DB_USER="postgres"
 DB_NAME="postgres"
-BACKUP_FILE="../src/main/resources/sql/backup/backup.sql"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_FILE="${SCRIPT_DIR}/../src/main/resources/sql/backup_before_reset.sql"
 
 echo "Creating a backup copy..."
 

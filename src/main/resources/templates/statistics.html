@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Статистика рейсов - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/statisticsJournal.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/journal}" class="back-link">← Назад к журналу</a>
+    <h1>Статистика рейсов</h1>
+
+    <div th:if="${message}" th:class="${'success'.equals(messageType)} ? 'message success' : (${'error'.equals(messageType)} ? 'message error' : 'message info')"
+         th:text="${message}">
+    </div>
+
+    <div class="form-section">
+        <h2>Самое короткое время проезда</h2>
+        <form method="post" th:action="@{/journal/statistics/fastest}">
+            <div class="form-group">
+                <label for="routeId">Выберите маршрут:</label>
+                <select id="routeId" name="routeId" required>
+                    <option value="">Выберите маршрут</option>
+                    <option th:each="route : ${routeList}"
+                            th:value="${route.id}"
+                            th:selected="${selectedRouteId == route.id}"
+                            th:text="${route.name}">
+                        Название маршрута
+                    </option>
+                </select>
+            </div>
+            <button type="submit" style="margin-bottom: 5px;">Найти рекорд</button>
+        </form>
+
+        <div th:if="${fastestTrip != null}" class="stats-card">
+            <h3>Рекордный рейс</h3>
+            <p><strong>Автомобиль:</strong>
+                <span th:text="${fastestTrip.autoNum} + ' (' + ${fastestTrip.autoMark} + ')'">Автомобиль</span>
+            </p>
+            <p><strong>Маршрут:</strong> <span th:text="${fastestTrip.routeName}">Маршрут</span></p>
+            <p><strong>Время в пути:</strong> <span th:text="${formattedDuration}">00:00:00</span></p>
+            <p><strong>Отправление:</strong> <span th:text="${#temporals.format(fastestTrip.timeOut, 'HH:mm dd-MM-yyyy')}">2024-01-01 00:00:00</span></p>
+            <p><strong>Прибытие:</strong> <span th:text="${#temporals.format(fastestTrip.timeIn, 'HH:mm dd-MM-yyyy')}">2024-01-01 00:00:00</span></p>
+        </div>
+
+        <div th:if="${fastestTrip == null and selectedRouteId != null}" class="no-data">
+            Для выбранного маршрута нет завершенных рейсов
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Активные рейсы по маршрутам</h2>
+        <div th:if="${#lists.isEmpty(activeTripsStats)}" class="no-data">
+            Нет данных об активных рейсах
+        </div>
+        <div th:each="stat : ${activeTripsStats}" class="stats-card">
+            <div class="stats-route" th:text="${stat.routeName}">Название маршрута</div>
+            <div class="stats-value" th:text="${stat.activeTripsCount} + ' авто в рейсе'">0 авто в рейсе</div>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>

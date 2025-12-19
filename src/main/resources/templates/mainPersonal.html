@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Весь персонал</title>
+    <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="back-link">← Назад</a>
+    <h1>Весь персонал</h1>
+
+    <div th:if="${message}" th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div class="menu">
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/personal/create}">Добавить сотрудника</a>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th sec:authorize="hasRole('ADMIN')">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(personalList)}">
+            <td colspan="5" class="no-data">Нет данных о персонале</td>
+        </tr>
+        <tr th:each="person : ${personalList}">
+            <td th:text="${person.id}"></td>
+            <td th:text="${person.lastName}"></td>
+            <td th:text="${person.firstName}"></td>
+            <td>
+                <span th:if="${person.fatherName != null}" th:text="${person.fatherName}"></span>
+                <span th:if="${person.fatherName == null}">-</span>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')" class="actions">
+                <a th:href="@{/personal/edit/{id}(id=${person.id})}" class="btn-edit">Редактировать</a>
+                <form th:action="@{/personal/delete/{id}(id=${person.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-delete"
+                            onclick="return confirm('Вы уверены, что хотите удалить этого сотрудника?')">
+                        Удалить
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

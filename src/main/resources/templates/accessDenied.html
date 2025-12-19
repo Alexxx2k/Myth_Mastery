@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Доступ запрещен - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/accessDenied.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Доступ запрещен</h1>
+    <p>У вас недостаточно прав для доступа к этой странице.</p>
+    <div>
+        <a th:href="@{/}" class="btn">На главную</a>
+        <a th:href="@{/logout}" class="btn btn-secondary">Выйти</a>
+    </div>
+</div>
+</body>
+</html>

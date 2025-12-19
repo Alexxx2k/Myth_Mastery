@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать автомобиль - Автосервис</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/autos}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Редактировать автомобиль</h1>
+
+    <!-- Сообщения об успехе/ошибке -->
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/autos/update/{id}(id=${auto.id})}">
+        <div class="form-group">
+            <label for="num">Гос. номер *</label>
+            <input type="text" id="num" name="num"
+                   th:value="${auto.num}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mark">Марка *</label>
+            <input type="text" id="mark" name="mark"
+                   th:value="${auto.mark}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="color">Цвет *</label>
+            <input type="text" id="color" name="color"
+                   th:value="${auto.color}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="personalId">Водитель *</label>
+            <select id="personalId" name="personalId" required>
+                <option value="">Выберите водителя</option>
+                <option th:each="person : ${personalList}"
+                        th:value="${person.id}"
+                        th:selected="${auto.personalId == person.id}"
+                        th:text="${person.lastName + ' ' + person.firstName}">
+                </option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
