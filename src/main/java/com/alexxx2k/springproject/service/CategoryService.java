@@ -50,7 +50,6 @@ public class CategoryService {
         CategoryEntity existingEntity = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Категория с ID " + id + " не найдена"));
 
-        // Проверяем, не существует ли уже категория с таким именем (кроме текущей)
         if (categoryRepository.existsByNameAndIdNot(category.name(), id)) {
             throw new IllegalArgumentException("Категория с названием '" + category.name() + "' уже существует");
         }
