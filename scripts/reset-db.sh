@@ -4,7 +4,7 @@ set -e
 CONTAINER_NAME="postgres_container"
 DB_USER="postgres"
 DB_NAME="postgres"
-PG_VOLUME="springproject_pg_data"
+PG_VOLUME="myth_mastery_pg_data"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_BEFORE_RESET="${SCRIPT_DIR}/../src/main/resources/sql/backup_before_reset.sql"
