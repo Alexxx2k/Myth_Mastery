@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать город - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/cities}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Редактировать город</h1>
+
+    <!-- Сообщения об успехе/ошибке -->
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/cities/update/{id}(id=${city.id})}">
+        <div class="form-group">
+            <label for="name">Название города *</label>
+            <input type="text" id="name" name="name"
+                   th:value="${city.name}" required
+                   placeholder="Например: Москва, Санкт-Петербург, Казань">
+        </div>
+
+        <div class="form-group">
+            <label for="deliveryTime">Время доставки (дни) *</label>
+            <input type="number" id="deliveryTime" name="deliveryTime"
+                   th:value="${city.deliveryTime}"
+                   min="1" max="365" required
+                   placeholder="Например: 3, 5, 7">
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
