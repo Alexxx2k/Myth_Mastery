@@ -29,7 +29,8 @@ public class CategoryController {
     @GetMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateCategoryForm(Model model) {
-        model.addAttribute("category", Category.forCreation("", "", ""));
+        // Передаем null вместо пустых строк
+        model.addAttribute("category", new Category(null, null, null, null));
         return "createCategory";
     }
 

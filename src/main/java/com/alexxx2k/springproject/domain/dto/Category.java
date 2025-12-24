@@ -6,13 +6,11 @@ public record Category(
         String hazard,
         String rarity
 ) {
-    public Category {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or blank");
-        }
-    }
 
     public static Category forCreation(String name, String hazard, String rarity) {
-        return new Category(null, name, hazard, rarity);
+        return new Category(null,
+                name != null ? name : "",
+                hazard != null ? hazard : "",
+                rarity != null ? rarity : "");
     }
 }
