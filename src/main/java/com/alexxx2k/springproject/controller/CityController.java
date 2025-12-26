@@ -2,6 +2,7 @@ package com.alexxx2k.springproject.controller;
 
 import com.alexxx2k.springproject.domain.dto.City;
 import com.alexxx2k.springproject.service.CityService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,8 +91,12 @@ public class CityController {
             cityService.deleteCity(id);
             redirectAttributes.addFlashAttribute("message", "Город успешно удален!");
             redirectAttributes.addFlashAttribute("messageType", "success");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Ошибка при удалении города: " + e.getMessage());
+        }
+        catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Невозможно удалить город: Сначала удалите все связанные объекты"
+            );
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
         return "redirect:/cities";
