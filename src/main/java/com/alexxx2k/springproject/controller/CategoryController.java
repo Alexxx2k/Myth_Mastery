@@ -2,6 +2,7 @@ package com.alexxx2k.springproject.controller;
 
 import com.alexxx2k.springproject.domain.dto.Category;
 import com.alexxx2k.springproject.service.CategoryService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,13 +24,12 @@ public class CategoryController {
     public String getAllCategories(Model model) {
         var categoryList = categoryService.getAllCategories();
         model.addAttribute("categoryList", categoryList);
-        return "mainCategory"; // или другое имя шаблона
+        return "mainCategory";
     }
 
     @GetMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateCategoryForm(Model model) {
-        // Передаем null вместо пустых строк
         model.addAttribute("category", new Category(null, null, null, null));
         return "createCategory";
     }
@@ -95,6 +95,12 @@ public class CategoryController {
             categoryService.deleteCategory(id);
             redirectAttributes.addFlashAttribute("message", "Категория успешно удалена!");
             redirectAttributes.addFlashAttribute("messageType", "success");
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Невозможно удалить категорию: Сначала удалите все связанные объекты"
+            );
+            redirectAttributes.addFlashAttribute("messageType", "error");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Ошибка при удалении категории: " + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
