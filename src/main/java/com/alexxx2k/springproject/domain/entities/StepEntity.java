@@ -25,7 +25,6 @@ public class StepEntity {
         this.description = description;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

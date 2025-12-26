@@ -45,7 +45,6 @@ public class StepService {
         StepEntity existingEntity = stepRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Шаг с ID " + id + " не найден"));
 
-        // Проверяем, не существует ли уже шаг с таким именем (кроме текущего)
         Optional<StepEntity> duplicate = stepRepository.findByName(step.name());
         if (duplicate.isPresent() && !duplicate.get().getId().equals(id)) {
             throw new IllegalArgumentException("Шаг с названием '" + step.name() + "' уже существует");

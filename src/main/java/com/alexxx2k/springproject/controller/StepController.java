@@ -2,6 +2,7 @@ package com.alexxx2k.springproject.controller;
 
 import com.alexxx2k.springproject.domain.dto.Step;
 import com.alexxx2k.springproject.service.StepService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +24,7 @@ public class StepController {
     public String getAllSteps(Model model) {
         var stepList = stepService.getAllSteps();
         model.addAttribute("stepList", stepList);
-        return "mainStep"; // Имя Thymeleaf шаблона
+        return "mainStep";
     }
 
     @GetMapping("/create")
@@ -90,6 +91,15 @@ public class StepController {
             stepService.deleteStep(id);
             redirectAttributes.addFlashAttribute("message", "Шаг успешно удален!");
             redirectAttributes.addFlashAttribute("messageType", "success");
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Невозможно удалить шаг: сначала удалите все связанные объекты"
+            );
+            redirectAttributes.addFlashAttribute("messageType", "error");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("message", "Ошибка: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Ошибка при удалении шага: " + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
@@ -97,7 +107,6 @@ public class StepController {
         return "redirect:/steps";
     }
 
-    // REST-эндпоинт для проверки существования шага по имени (если нужно)
     @GetMapping("/exists")
     @ResponseBody
     public boolean checkStepExists(@RequestParam String name) {
