@@ -25,7 +25,6 @@ public class CityEntity {
         this.deliveryTime = deliveryTime;
     }
 
-    // Getters, setters
     public Long getId() {
         return id;
     }

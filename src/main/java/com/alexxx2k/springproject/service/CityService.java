@@ -45,7 +45,6 @@ public class CityService {
         CityEntity existingEntity = cityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Город с ID " + id + " не найден"));
 
-        // Проверяем уникальность имени (кроме текущего города)
         Optional<CityEntity> duplicate = cityRepository.findByName(city.name());
         if (duplicate.isPresent() && !duplicate.get().getId().equals(id)) {
             throw new IllegalArgumentException("Город с названием '" + city.name() + "' уже существует");

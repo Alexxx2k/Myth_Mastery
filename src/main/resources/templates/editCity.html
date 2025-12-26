@@ -9,7 +9,6 @@
     <a th:href="@{/cities}" class="btn btn-secondary">← Назад к списку</a>
     <h1>Редактировать город</h1>
 
-    <!-- Сообщения об успехе/ошибке -->
     <div th:if="${message}"
          th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
          th:text="${message}">
