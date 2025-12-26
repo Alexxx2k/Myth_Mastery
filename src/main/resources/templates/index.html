@@ -27,10 +27,10 @@
             <a th:href="@{/routes}">Таблица маршрутов</a>
             <a th:href="@{/journal}">Журнал рейсов</a>
             <a th:href="@{/mythologies}">Мифологии</a>
-            <a th:href="@{/steps}">Шаги</a> <!-- НОВАЯ ССЫЛКА -->
+            <a th:href="@{/categories}">Категории</a>
+            <a th:href="@{/steps}">Шаги</a>
         </div>
 
-        <!-- Только для ADMIN -->
         <div sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/users}" class="admin-only">Управление пользователями</a>
         </div>
