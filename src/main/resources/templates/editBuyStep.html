@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать шаг покупки - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/buy-steps}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Редактировать шаг покупки</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/buy-steps/update/{id}(id=${buyStep.id})}">
+        <div class="form-group">
+            <label for="stepId">ID шага (Step ID) *</label>
+            <input type="number" id="stepId" name="stepId"
+                   th:value="${buyStep.stepId}" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dateStart">Дата начала</label>
+            <input type="date" id="dateStart" name="dateStart"
+                   th:value="${buyStep.dateStart}">
+        </div>
+
+        <div class="form-group">
+            <label for="dateEnd">Дата окончания</label>
+            <input type="date" id="dateEnd" name="dateEnd"
+                   th:value="${buyStep.dateEnd}">
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
