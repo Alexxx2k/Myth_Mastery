@@ -9,9 +9,9 @@ INSERT INTO category (name, hazard, rarity) VALUES
 ('Artifact', 'Medium', 'Uncommon');
 
 INSERT INTO city (name, delivery_time) VALUES
-('New York', 2353263),
-('London', 30000),
-('Tokyo', 234553);
+('New York', 23),
+('London', 30),
+('Tokyo', 23);
 
 INSERT INTO step (name, description) VALUES
 ('Buy Placed', 'Customer submitted the buy'),
@@ -20,9 +20,7 @@ INSERT INTO step (name, description) VALUES
 ('Delivered', 'Buy has been delivered');
 
 INSERT INTO customer (city_id, name, email, password_hash) VALUES
-((SELECT id FROM city WHERE name = 'New York'), 'John Doe', 'john.doe@example.com', '1234'),
-((SELECT id FROM city WHERE name = 'London'), 'Jane Smith', 'jane.smith@example.com', '1234'),
-((SELECT id FROM city WHERE name = 'Tokyo'), 'Taro Tanaka', 'taro.tanaka@example.jp', '1234');
+((SELECT id FROM city WHERE name = 'Tokyo'), 'Test Oleg', 'OLEG@gmail.com', '$2a$10$zoYqOM8e44PYtJSdbYg7DeULcbmqEnDvIr448O1gLF5YQJ6DIkK3q');
 
 INSERT INTO buy_step (step_id, date_start, date_end) VALUES
 ((SELECT id FROM step WHERE name = 'Buy Placed'), '2023-10-26', '2023-10-26'),

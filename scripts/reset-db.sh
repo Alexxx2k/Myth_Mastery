@@ -7,7 +7,7 @@ DB_NAME="postgres"
 PG_VOLUME="myth_mastery_pg_data"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKUP_BEFORE_RESET="${SCRIPT_DIR}/../src/main/resources/sql/backup_before_reset.sql"
+BACKUP_BEFORE_RESET="${SCRIPT_DIR}/../src/main/resources/sql/backup/backup_before_reset.sql"
 
 echo "Using configuration:"
 echo "Container: $CONTAINER_NAME"
