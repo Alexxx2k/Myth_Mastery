@@ -2,13 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4 (Debian 17.4-1.pgdg120+2)
--- Dumped by pg_dump version 17.4 (Debian 17.4-1.pgdg120+2)
+-- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
+-- Dumped by pg_dump version 15.2 (Debian 15.2-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -48,7 +47,7 @@ CREATE SEQUENCE public.buy_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.buy_id_seq OWNER TO postgres;
+ALTER TABLE public.buy_id_seq OWNER TO postgres;
 
 --
 -- Name: buy_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -84,7 +83,7 @@ CREATE SEQUENCE public.buy_product_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.buy_product_id_seq OWNER TO postgres;
+ALTER TABLE public.buy_product_id_seq OWNER TO postgres;
 
 --
 -- Name: buy_product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -120,7 +119,7 @@ CREATE SEQUENCE public.buy_step_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.buy_step_id_seq OWNER TO postgres;
+ALTER TABLE public.buy_step_id_seq OWNER TO postgres;
 
 --
 -- Name: buy_step_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -134,8 +133,8 @@ ALTER SEQUENCE public.buy_step_id_seq OWNED BY public.buy_step.id;
 --
 
 CREATE TABLE public.category (
-    id integer NOT NULL,
-    name character varying(50),
+    id bigint NOT NULL,
+    name character varying(100),
     hazard character varying(50),
     rarity character varying(50)
 );
@@ -156,7 +155,7 @@ CREATE SEQUENCE public.category_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.category_id_seq OWNER TO postgres;
+ALTER TABLE public.category_id_seq OWNER TO postgres;
 
 --
 -- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -170,9 +169,9 @@ ALTER SEQUENCE public.category_id_seq OWNED BY public.category.id;
 --
 
 CREATE TABLE public.city (
-    id integer NOT NULL,
-    name character varying(50) NOT NULL,
-    delivery_time time without time zone
+    id bigint NOT NULL,
+    name character varying(100) NOT NULL,
+    delivery_time bigint
 );
 
 
@@ -191,7 +190,7 @@ CREATE SEQUENCE public.city_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.city_id_seq OWNER TO postgres;
+ALTER TABLE public.city_id_seq OWNER TO postgres;
 
 --
 -- Name: city_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -205,10 +204,11 @@ ALTER SEQUENCE public.city_id_seq OWNED BY public.city.id;
 --
 
 CREATE TABLE public.customer (
-    id integer NOT NULL,
-    city_id integer NOT NULL,
+    id bigint NOT NULL,
+    city_id bigint NOT NULL,
     name character varying(50) NOT NULL,
-    email character varying(50)
+    email character varying(50),
+    password_hash character varying(255) NOT NULL
 );
 
 
@@ -227,7 +227,7 @@ CREATE SEQUENCE public.customer_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.customer_id_seq OWNER TO postgres;
+ALTER TABLE public.customer_id_seq OWNER TO postgres;
 
 --
 -- Name: customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -241,7 +241,7 @@ ALTER SEQUENCE public.customer_id_seq OWNED BY public.customer.id;
 --
 
 CREATE TABLE public.mythology (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying(50)
 );
 
@@ -261,7 +261,7 @@ CREATE SEQUENCE public.mythology_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.mythology_id_seq OWNER TO postgres;
+ALTER TABLE public.mythology_id_seq OWNER TO postgres;
 
 --
 -- Name: mythology_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -300,7 +300,7 @@ CREATE SEQUENCE public.product_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.product_id_seq OWNER TO postgres;
+ALTER TABLE public.product_id_seq OWNER TO postgres;
 
 --
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -314,8 +314,8 @@ ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
 --
 
 CREATE TABLE public.step (
-    id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    id bigint NOT NULL,
+    name character varying(100) NOT NULL,
     description character varying(100)
 );
 
@@ -335,7 +335,7 @@ CREATE SEQUENCE public.step_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.step_id_seq OWNER TO postgres;
+ALTER TABLE public.step_id_seq OWNER TO postgres;
 
 --
 -- Name: step_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -453,10 +453,9 @@ COPY public.category (id, name, hazard, rarity) FROM stdin;
 --
 
 COPY public.city (id, name, delivery_time) FROM stdin;
-1	New York	01:30:00
-2	London	02:00:00
-3	Tokyo	03:00:00
-4	Miami	06:06:06
+1	New York	2353263
+2	London	30000
+3	Tokyo	234553
 \.
 
 
@@ -464,10 +463,10 @@ COPY public.city (id, name, delivery_time) FROM stdin;
 -- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.customer (id, city_id, name, email) FROM stdin;
-1	1	John Doe	john.doe@example.com
-2	2	Jane Smith	jane.smith@example.com
-3	3	Taro Tanaka	taro.tanaka@example.jp
+COPY public.customer (id, city_id, name, email, password_hash) FROM stdin;
+1	1	John Doe	john.doe@example.com	1234
+2	2	Jane Smith	jane.smith@example.com	1234
+3	3	Taro Tanaka	taro.tanaka@example.jp	1234
 \.
 
 
@@ -537,7 +536,7 @@ SELECT pg_catalog.setval('public.category_id_seq', 3, true);
 -- Name: city_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.city_id_seq', 4, true);
+SELECT pg_catalog.setval('public.city_id_seq', 3, true);
 
 
 --

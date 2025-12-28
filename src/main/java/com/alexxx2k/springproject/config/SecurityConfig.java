@@ -21,6 +21,18 @@ public class SecurityConfig {
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+
+        System.out.println("=== SECURITY CONFIG INIT ===");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String testHash = encoder.encode("admin123");
+        System.out.println("Test hash for 'admin123': " + testHash);
+        System.out.println("Test verification: " + encoder.matches("admin123", testHash));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        System.out.println("=== CREATING PasswordEncoder BEAN ===");
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -29,20 +41,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/delete/**", "/autos/delete/**", "/routes/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/create", "/personal/edit/**", "/personal/update/**",
-                                "/autos/create", "/autos/edit/**", "/autos/update/**",
-                                "/routes/create", "/routes/edit/**", "/routes/update/**",
-                                "/journal/start", "/journal/end", "/journal/edit/**", "/journal/update/**","/journal/delete/**"
-                        ).hasRole("ADMIN")
-                        // temp. toDelete in future:
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/admin/customers/**").hasRole("ADMIN")
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
-                        // В SecurityConfig.java в методе securityFilterChain добавьте:
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/**", "/autos/**", "/routes/**", "/journal/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -69,10 +73,5 @@ public class SecurityConfig {
         return (request, response, accessDeniedException) -> {
             response.sendRedirect("/access-denied");
         };
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
