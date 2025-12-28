@@ -18,12 +18,10 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    // УБРАТЬ BCryptPasswordEncoder из конструктора
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
 
-        // Быстрая проверка BCrypt
         System.out.println("=== SECURITY CONFIG INIT ===");
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String testHash = encoder.encode("admin123");
@@ -43,21 +41,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/users/**").hasRole("ADMIN")
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/admin/customers/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/delete/**", "/autos/delete/**", "/routes/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/create", "/personal/edit/**", "/personal/update/**",
-                                "/autos/create", "/autos/edit/**", "/autos/update/**",
-                                "/routes/create", "/routes/edit/**", "/routes/update/**",
-                                "/journal/start", "/journal/end", "/journal/edit/**", "/journal/update/**","/journal/delete/**"
-                        ).hasRole("ADMIN")
-                        // temp. toDelete in future:
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/personal/**", "/autos/**", "/routes/**", "/journal/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

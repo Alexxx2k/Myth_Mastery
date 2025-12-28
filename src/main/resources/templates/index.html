@@ -22,10 +22,6 @@
 
     <div class="menu">
         <div sec:authorize="hasAnyRole('ADMIN', 'USER')">
-            <a th:href="@{/personal}">Таблица персонала</a>
-            <a th:href="@{/autos}">Таблица автомобилей</a>
-            <a th:href="@{/routes}">Таблица маршрутов</a>
-            <a th:href="@{/journal}">Журнал рейсов</a>
             <a th:href="@{/mythologies}">Мифологии</a>
             <a th:href="@{/cities}">Города</a>
             <a th:href="@{/categories}">Категории</a>
