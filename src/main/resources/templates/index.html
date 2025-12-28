@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
-    <title>Автосервис - Главная</title>
+    <title>Главная</title>
     <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
@@ -17,8 +17,8 @@
         <a href="#" th:href="@{/logout}" class="logout-btn">Выйти</a>
     </div>
 
-    <h1>Автосервис & MythMastery</h1>
-    <p style="text-align: center;">Система управления автопарком и мифологической атрибутикой</p>
+    <h1>MythMastery</h1>
+    <p style="text-align: center;">Онлайн-Магазин атрибутики различных мифологий</p>
 
     <div class="menu">
         <div sec:authorize="hasAnyRole('ADMIN', 'USER')">
