@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Продукты - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
+    <link rel="stylesheet" th:href="@{/css/product.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="back-link">← На главную</a>
+
+    <h1>Продукты</h1>
+
+    <div th:if="${message}" th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div sec:authorize="hasRole('ADMIN')" class="menu">
+        <a th:href="@{/products/create}">Добавить продукт</a>
+    </div>
+
+    <div class="filters">
+        <h3>Фильтры:</h3>
+        <div class="filter-buttons">
+            <button type="button" class="filter-btn all" id="allProductsBtn"
+                    onclick="window.location.href='/products'">Все продукты</button>
+
+            <div style="position: relative;">
+                <button type="button" class="filter-btn dropdown" id="categoriesBtn">Категории</button>
+                <div class="dropdown-menu" id="categoriesDropdown">
+                    <a th:each="category : ${categories}"
+                       th:href="@{/products/by-category/{id}(id=${category.id})}"
+                       th:text="${category.name}"
+                       class="dropdown-item"></a>
+                </div>
+            </div>
+
+            <div style="position: relative;">
+                <button type="button" class="filter-btn dropdown" id="mythologiesBtn">Мифологии</button>
+                <div class="dropdown-menu" id="mythologiesDropdown">
+                    <a th:each="mythology : ${mythologies}"
+                       th:href="@{/products/by-mythology/{id}(id=${mythology.id})}"
+                       th:text="${mythology.name}"
+                       class="dropdown-item"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Мифология</th>
+            <th>Цена</th>
+            <th>Описание</th>
+            <th>Изображение</th>
+            <th sec:authorize="hasRole('ADMIN')">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(productList)}">
+            <td colspan="8" class="no-data">Нет данных о продуктах</td>
+        </tr>
+        <tr th:each="product : ${productList}">
+            <td th:text="${product.id}"></td>
+            <td>
+                <strong th:text="${product.name}"></strong>
+            </td>
+            <td>
+                <div class="category-badge" th:text="${product.categoryName}"></div>
+            </td>
+            <td>
+                <div class="mythology-badge" th:text="${product.mythologyName}"></div>
+            </td>
+            <td class="price-column">
+                <span th:text="${#numbers.formatDecimal(product.price, 1, 'WHITESPACE', 2, 'COMMA')} + ' ₽'"></span>
+            </td>
+            <td class="description-column" th:text="${product.description} ?: '—'"></td>
+            <td>
+                <img th:if="${product.pic}"
+                     th:src="@{${product.pic}}"
+                     alt="Изображение продукта"
+                     class="product-image"
+                     onerror="this.style.display='none'">
+                <span th:unless="${product.pic}">—</span>
+            </td>
+            <td sec:authorize="hasRole('ADMIN')" >
+                <div class="actions">
+                    <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn-edit" >Редактировать</a>
+                    <form th:action="@{/products/delete/{id}(id=${product.id})}" method="post">
+                        <button type="submit" class="btn-delete"
+                                onclick="return confirm('Вы уверены, что хотите удалить этот продукт?')">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoriesBtn = document.getElementById('categoriesBtn');
+        const categoriesDropdown = document.getElementById('categoriesDropdown');
+        const mythologiesBtn = document.getElementById('mythologiesBtn');
+        const mythologiesDropdown = document.getElementById('mythologiesDropdown');
+
+        function closeAllDropdowns() {
+            categoriesDropdown.classList.remove('show');
+            mythologiesDropdown.classList.remove('show');
+            categoriesBtn.classList.remove('active');
+            mythologiesBtn.classList.remove('active');
+        }
+
+        categoriesBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (categoriesDropdown.classList.contains('show')) {
+                categoriesDropdown.classList.remove('show');
+                categoriesBtn.classList.remove('active');
+            } else {
+                closeAllDropdowns();
+                categoriesDropdown.classList.add('show');
+                categoriesBtn.classList.add('active');
+            }
+        });
+
+        mythologiesBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (mythologiesDropdown.classList.contains('show')) {
+                mythologiesDropdown.classList.remove('show');
+                mythologiesBtn.classList.remove('active');
+            } else {
+                closeAllDropdowns();
+                mythologiesDropdown.classList.add('show');
+                mythologiesBtn.classList.add('active');
+            }
+        });
+
+        document.addEventListener('click', function() {
+            closeAllDropdowns();
+        });
+    });
+</script>
+</html>
