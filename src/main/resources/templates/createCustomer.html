@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Создание клиента</title>
+  <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+  <a th:href="@{/customers}" class="btn btn-secondary">← Назад к списку</a>
+  <h1>Создание нового клиента</h1>
+
+  <div th:if="${message}"
+       th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+       th:text="${message}">
+  </div>
+
+  <form method="post" th:action="@{/customers/create}">
+    <div class="form-group">
+      <label for="name">Имя *</label>
+      <input type="text" id="name" name="name" required
+             th:value="${customer.name()}"
+             placeholder="Введите имя клиента">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required
+             th:value="${customer.email()}"
+             placeholder="example@mail.com">
+    </div>
+
+    <div class="form-group">
+      <label for="cityName">Город *</label>
+      <select id="cityName" name="cityName" required>
+        <option value="">Выберите город</option>
+        <option th:each="city : ${cityList}"
+                th:value="${city.name()}"
+                th:selected="${customer.cityName() == city.name()}"
+                th:text="${city.name()}">
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Пароль *</label>
+      <input type="password" id="password" name="password" required
+             placeholder="Минимум 4 символа" minlength="4">
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary">Создать клиента</button>
+      <a th:href="@{/customers}" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

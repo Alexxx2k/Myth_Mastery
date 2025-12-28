@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Регистрация - MythMastery</title>
+  <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+  <a th:href="@{/}" class="btn btn-secondary">← На главную</a>
+  <h1>Регистрация</h1>
+
+  <div th:if="${message}"
+       th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+       th:text="${message}">
+  </div>
+
+  <form method="post" th:action="@{/register}">
+    <div class="form-group">
+      <label for="name">Имя *</label>
+      <input type="text" id="name" name="name" required
+             th:value="${Registration.name}"
+             placeholder="Введите ваше имя">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required
+             th:value="${Registration.email}"
+             placeholder="example@mail.com">
+    </div>
+
+    <div class="form-group">
+      <label for="cityName">Город *</label>
+      <select id="cityName" name="cityName" required>
+        <option value="">Выберите город</option>
+        <option th:each="city : ${cityList}"
+                th:value="${city.name}"
+                th:selected="${Registration.cityName == city.name}"
+                th:text="${city.name}">
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Пароль *</label>
+      <input type="password" id="password" name="password" required
+             placeholder="Минимум 4 символа">
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Подтвердите пароль *</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required
+             placeholder="Повторите пароль">
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      <a th:href="@{/login}" class="btn btn-secondary">Уже есть аккаунт? Войти</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>
