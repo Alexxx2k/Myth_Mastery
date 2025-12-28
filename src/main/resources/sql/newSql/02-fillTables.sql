@@ -19,10 +19,10 @@ INSERT INTO step (name, description) VALUES
 ('Sent', 'Gargoyle has been sent'),
 ('Delivered', 'Buy has been delivered');
 
-INSERT INTO customer (city_id, name, email) VALUES
-((SELECT id FROM city WHERE name = 'New York'), 'John Doe', 'john.doe@example.com'),
-((SELECT id FROM city WHERE name = 'London'), 'Jane Smith', 'jane.smith@example.com'),
-((SELECT id FROM city WHERE name = 'Tokyo'), 'Taro Tanaka', 'taro.tanaka@example.jp');
+INSERT INTO customer (city_id, name, email, password_hash) VALUES
+((SELECT id FROM city WHERE name = 'New York'), 'John Doe', 'john.doe@example.com', '1234'),
+((SELECT id FROM city WHERE name = 'London'), 'Jane Smith', 'jane.smith@example.com', '1234'),
+((SELECT id FROM city WHERE name = 'Tokyo'), 'Taro Tanaka', 'taro.tanaka@example.jp', '1234');
 
 INSERT INTO buy_step (step_id, date_start, date_end) VALUES
 ((SELECT id FROM step WHERE name = 'Buy Placed'), '2023-10-26', '2023-10-26'),

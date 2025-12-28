@@ -18,7 +18,7 @@
 
     <form method="post" th:action="@{/login}">
         <div class="form-group">
-            <label for="username">Имя пользователя:</label>
+            <label for="username">Email (электронная почта):</label>
             <input type="text" id="username" name="username" required autofocus>
         </div>
 
@@ -27,7 +27,10 @@
             <input type="password" id="password" name="password" required>
         </div>
 
-        <button type="submit" class="btn-login">Войти</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" class="btn-login" style="flex: 1;">Войти</button>
+            <a th:href="@{/register}" class="btn-register" style="flex: 1; text-align: center;">Регистрация</a>
+        </div>
     </form>
 
     <div class="debug-info">
@@ -43,7 +46,26 @@
         document.getElementById('username').value = username;
         document.getElementById('password').value = password;
     }
-
 </script>
+
+<style>
+    .btn-register {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #616161;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        line-height: 1.5;
+    }
+
+    .btn-register:hover {
+        background: #757575;
+    }
+</style>
 </body>
 </html>

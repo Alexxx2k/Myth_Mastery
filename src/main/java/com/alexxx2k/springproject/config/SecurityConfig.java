@@ -18,9 +18,23 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    // УБРАТЬ BCryptPasswordEncoder из конструктора
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+
+        // Быстрая проверка BCrypt
+        System.out.println("=== SECURITY CONFIG INIT ===");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String testHash = encoder.encode("admin123");
+        System.out.println("Test hash for 'admin123': " + testHash);
+        System.out.println("Test verification: " + encoder.matches("admin123", testHash));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        System.out.println("=== CREATING PasswordEncoder BEAN ===");
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -30,6 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/admin/customers/**").hasRole("ADMIN")
                         .requestMatchers("/personal/delete/**", "/autos/delete/**", "/routes/delete/**").hasRole("ADMIN")
                         .requestMatchers("/personal/create", "/personal/edit/**", "/personal/update/**",
                                 "/autos/create", "/autos/edit/**", "/autos/update/**",
@@ -39,7 +55,6 @@ public class SecurityConfig {
                         // temp. toDelete in future:
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
-                        // В SecurityConfig.java в методе securityFilterChain добавьте:
                         .requestMatchers("/mythologies/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/mythologies/create", "/mythologies/edit/**", "/mythologies/update/**", "/mythologies/delete/**").hasRole("ADMIN")
                         .requestMatchers("/personal/**", "/autos/**", "/routes/**", "/journal/**").hasAnyRole("ADMIN", "USER")
@@ -69,10 +84,5 @@ public class SecurityConfig {
         return (request, response, accessDeniedException) -> {
             response.sendRedirect("/access-denied");
         };
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
