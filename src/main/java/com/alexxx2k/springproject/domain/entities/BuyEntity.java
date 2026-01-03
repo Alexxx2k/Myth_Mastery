@@ -13,18 +13,20 @@ public class BuyEntity {
     @Column(name = "customer_id", nullable = false)
     private Long customerId;
 
-    @Column(name = "buy_step_id")
-    private Long buyStepId;
+    @Column(name = "buy_step_id", nullable = false)
+    private Long buyStepId = 1L;
 
     @Column(name = "description", length = 500)
     private String description;
 
-    public BuyEntity() {}
+    public BuyEntity() {
+        this.buyStepId = 1L;
+    }
 
     public BuyEntity(Long id, Long customerId, Long buyStepId, String description) {
         this.id = id;
         this.customerId = customerId;
-        this.buyStepId = buyStepId;
+        this.buyStepId = buyStepId != null ? buyStepId : 1L;
         this.description = description;
     }
 
@@ -35,7 +37,9 @@ public class BuyEntity {
     public void setCustomerId(Long customerId) { this.customerId = customerId; }
 
     public Long getBuyStepId() { return buyStepId; }
-    public void setBuyStepId(Long buyStepId) { this.buyStepId = buyStepId; }
+    public void setBuyStepId(Long buyStepId) {
+        this.buyStepId = buyStepId != null ? buyStepId : 1L;
+    }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

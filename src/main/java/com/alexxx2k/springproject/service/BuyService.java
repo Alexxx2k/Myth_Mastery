@@ -13,9 +13,11 @@ import java.util.Optional;
 public class BuyService {
 
     private final BuyRepository buyRepository;
+    private final CustomerService customerService;
 
-    public BuyService(BuyRepository buyRepository) {
+    public BuyService(BuyRepository buyRepository, CustomerService customerService) {
         this.buyRepository = buyRepository;
+        this.customerService = customerService; // Добавляем
     }
 
     public List<Buy> getAllBuys() {
@@ -34,6 +36,7 @@ public class BuyService {
         BuyEntity buy = new BuyEntity();
         buy.setCustomerId(customerId);
         buy.setDescription(description);
+        // Если buyStepId null - будет использовано дефолтное значение из Entity
         buy.setBuyStepId(buyStepId);
 
         BuyEntity savedBuy = buyRepository.save(buy);

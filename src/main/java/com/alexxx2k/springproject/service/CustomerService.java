@@ -150,4 +150,20 @@ public class CustomerService {
                 entity.getCity() != null ? entity.getCity().getName() : null
         );
     }
+
+    // НОВЫЙ МЕТОД: Получить ID клиента по email (для заказов)
+    @Transactional(readOnly = true)
+    public Long getCustomerIdByEmail(String email) {
+        CustomerEntity customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Клиент с email '" + email + "' не найден"));
+        return customer.getId();
+    }
+
+    // НОВЫЙ МЕТОД: Получить текущего клиента по email
+    @Transactional(readOnly = true)
+    public Customer getCurrentCustomer(String email) {
+        return customerRepository.findByEmail(email)
+                .map(this::toDomainCustomer)
+                .orElseThrow(() -> new IllegalArgumentException("Клиент не найден"));
+    }
 }

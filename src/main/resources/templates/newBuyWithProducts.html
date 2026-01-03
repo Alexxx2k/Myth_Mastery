@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Новый заказ - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+    <link rel="stylesheet" th:href="@{/css/userOrders.css}">
+</head>
+<body>
+<div class="user-orders-container">
+    <a th:href="@{/}" class="user-back-link">← На главную</a>
+    <h1 class="user-orders-title"> Новый заказ</h1>
+
+    <div class="info-box">
+        <h4>ℹ️ Как оформить заказ:</h4>
+        <ol>
+            <li><strong>Выберите товары</strong> - кликните по карточкам товаров</li>
+            <li><strong>Добавьте комментарий</strong> - если нужно</li>
+            <li><strong>Нажмите "Создать заказ"</strong></li>
+            <li>Администратор свяжется с вами для уточнения деталей</li>
+        </ol>
+    </div>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'user-message user-success' : 'user-message user-error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/buys/create-user-order}" id="orderForm" class="user-order-form">
+        <!-- Скрытое поле для хранения выбранных ID -->
+        <input type="hidden" name="productIds" id="productIdsInput" value="">
+
+        <!-- Блок выбора товаров -->
+        <div class="product-selection">
+            <h3>Выберите товары:</h3>
+            <p>Кликните по товару, чтобы выбрать/отменить</p>
+
+            <div class="products-grid" id="productsContainer">
+                <div th:each="product : ${products}"
+                     class="product-item"
+                     th:data-id="${product.id}"
+                     onclick="toggleProduct(this)">
+
+                    <div th:if="${product.pic != null && !product.pic.isEmpty()}">
+                        <img th:src="@{${product.pic}}" alt="Product image" class="product-image"
+                             onerror="this.src='https://i.pinimg.com/736x/e1/f6/e9/e1f6e92aeb89abdd3981685acf034279.jpg'">
+                    </div>
+                    <div th:unless="${product.pic != null && !product.pic.isEmpty()}" class="no-image">
+                        Нет изображения
+                    </div>
+
+                    <div class="product-name" th:text="${product.name}"></div>
+                    <div class="product-price"
+                         th:text="${'₽' + #numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">
+                    </div>
+                    <div class="product-category">
+                        <span th:text="${product.categoryName}"></span> ·
+                        <span th:text="${product.mythologyName}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Показ выбранных товаров -->
+            <div class="selected-products" id="selectedProducts">
+                <h4>Выбранные товары: <span id="selectedCount">0</span></h4>
+                <ul class="selected-list" id="selectedList"></ul>
+            </div>
+        </div>
+
+        <!-- Комментарий -->
+        <div class="user-form-group">
+            <label for="description">Комментарий к заказу (необязательно):</label>
+            <textarea id="description" name="description" rows="4"
+                      placeholder="Укажите дополнительные пожелания:
+- Предпочтительный способ доставки
+- Контактный телефон для уточнений
+- Особые требования к товарам"></textarea>
+        </div>
+
+        <!-- Информация о пользователе -->
+        <div class="user-order-info">
+            <strong>Информация о заказчике:</strong>
+            <div>Email: <span class="user-order-email" th:text="${customerEmail}"></span></div>
+            <div class="user-order-note">Заказ будет привязан к вашему аккаунту</div>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="user-button-group">
+            <button type="submit" class="user-action-btn user-action-btn-success" style="padding: 14px 30px; font-size: 1.1em;">
+                Создать заказ
+            </button>
+            <a th:href="@{/products}" class="user-action-btn user-action-btn-secondary">
+                Посмотреть все товары
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    let selectedProducts = new Set();
+
+    // Функция переключения выбора товара
+    function toggleProduct(element) {
+        const productId = element.dataset.id;
+
+        if (selectedProducts.has(productId)) {
+            // Убираем из выбранных
+            selectedProducts.delete(productId);
+            element.classList.remove('selected');
+        } else {
+            // Добавляем в выбранных
+            selectedProducts.add(productId);
+            element.classList.add('selected');
+        }
+
+        updateSelectedDisplay();
+    }
+
+    // Обновление отображения выбранных товаров
+    function updateSelectedDisplay() {
+        const selectedCount = selectedProducts.size;
+        const selectedProductsDiv = document.getElementById('selectedProducts');
+        const selectedList = document.getElementById('selectedList');
+        const productIdsInput = document.getElementById('productIdsInput');
+
+        // Обновляем счетчик
+        document.getElementById('selectedCount').textContent = selectedCount;
+
+        // Показываем/скрываем блок с выбранными
+        if (selectedCount > 0) {
+            selectedProductsDiv.classList.add('show');
+
+            // Обновляем список
+            selectedList.innerHTML = '';
+            selectedProducts.forEach(productId => {
+                // Находим название товара по ID
+                const productElement = document.querySelector(`.product-item[data-id="${productId}"]`);
+                const productName = productElement ? productElement.querySelector('.product-name').textContent : `Товар #${productId}`;
+
+                const li = document.createElement('li');
+                li.textContent = productName;
+                selectedList.appendChild(li);
+            });
+        } else {
+            selectedProductsDiv.classList.remove('show');
+        }
+
+        // Обновляем скрытое поле
+        productIdsInput.value = Array.from(selectedProducts).join(',');
+    }
+
+    // Валидация формы
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        if (selectedProducts.size === 0) {
+            e.preventDefault();
+            alert('Пожалуйста, выберите хотя бы один товар!');
+            return false;
+        }
+
+        // Можно добавить подтверждение
+        const confirmMessage = `Вы выбрали ${selectedProducts.size} товар(ов).\nСоздать заказ?`;
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
+    });
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSelectedDisplay();
+    });
+</script>
+</body>
+</html>
