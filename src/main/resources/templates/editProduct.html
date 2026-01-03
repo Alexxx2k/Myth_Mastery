@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать продукт - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+    <link rel="stylesheet" th:href="@{/css/product.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/products}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Редактировать продукт</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/products/update/{id}(id=${product.id})}">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="name">Название продукта *</label>
+                <input type="text" id="name" name="name" required
+                       th:value="${product.name}"
+                       placeholder="Например: Меч Тора, Щит Ахилла">
+            </div>
+
+            <div class="form-group">
+                <label for="price">Цена (₽) *</label>
+                <input type="number" id="price" name="price" required
+                       min="0" step="0.01"
+                       th:value="${product.price}"
+                       placeholder="0.00">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="categoryId">Категория *</label>
+                <select id="categoryId" name="categoryId" required>
+                    <option value="">-- Выберите категорию --</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:selected="${product.categoryId == category.id}"
+                            th:text="${category.name + ' (' + category.hazard + ', ' + category.rarity + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mythologyId">Мифология *</label>
+                <select id="mythologyId" name="mythologyId" required>
+                    <option value="">-- Выберите мифологию --</option>
+                    <option th:each="mythology : ${mythologies}"
+                            th:value="${mythology.id}"
+                            th:selected="${product.mythologyId == mythology.id}"
+                            th:text="${mythology.name}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" rows="3"
+                      th:text="${product.description}"
+                      placeholder="Подробное описание продукта..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <div th:if="${product.pic}" class="current-image">
+                <label for="pic">Текущее изображение:</label>
+                <img th:src="@{${product.pic}}"
+                     alt="Текущее изображение"
+                     class="preview-current-image"
+                     onerror="this.style.display='none'">
+            </div>
+
+            <label for="pic">Ссылка на изображение</label>
+
+            <input type="text" id="pic" name="pic"
+                   th:value="${product.pic}"
+                   placeholder="https://example.com/image.jpg"
+                   oninput="previewImage(this.value)">
+            <div class="image-preview">
+                <img id="preview" class="preview-image" alt="Предпросмотр">
+            </div>
+            <small>Введите URL изображения. Изображение появится в предпросмотре.</small>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <a th:href="@{/products}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(url) {
+        const preview = document.getElementById('preview');
+        if (url) {
+            preview.src = url;
+            preview.style.display = 'block';
+            preview.onerror = function() {
+                preview.style.display = 'none';
+            };
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
