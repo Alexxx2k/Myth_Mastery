@@ -10,9 +10,6 @@
     <div class="user-info">
         <div class="user-details">
             Вы вошли как: <strong sec:authentication="name"></strong>
-            <span class="user-role">
-                (<span sec:authentication="principal.authorities"></span>)
-            </span>
         </div>
         <a href="#" th:href="@{/logout}" class="logout-btn">Выйти</a>
     </div>
