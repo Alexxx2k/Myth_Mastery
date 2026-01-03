@@ -1,4 +1,3 @@
-/* Общие стили */
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 40px;
@@ -102,7 +101,8 @@ th {
 }
 .actions {
     display: flex;
-    gap: 8px;
+    justify-content: left;
+    align-items: center;
 }
 .message {
     padding: 15px;
