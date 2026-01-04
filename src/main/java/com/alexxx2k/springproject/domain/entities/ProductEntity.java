@@ -30,20 +30,20 @@ public class ProductEntity {
     @Column(name = "description", length = 100)
     private String description;
 
-    @Column(name = "pic", length = 150)
-    private String pic;
+    @Column(name = "pic", length = 255) // Храним ключ S3 вместо URL
+    private String imageKey;
 
     public ProductEntity() {}
 
     public ProductEntity(Long id, CategoryEntity category, MythologyEntity mythology,
-                         String name, BigDecimal price, String description, String pic) {
+                         String name, BigDecimal price, String description, String imageKey) {
         this.id = id;
         this.category = category;
         this.mythology = mythology;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.pic = pic;
+        this.imageKey = imageKey;
     }
 
     public Long getId() {
@@ -94,12 +94,12 @@ public class ProductEntity {
         this.description = description;
     }
 
-    public String getPic() {
-        return pic;
+    public String getImageKey() {
+        return imageKey;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
+    public void setImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ProductEntity {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", description='" + description + '\'' +
-                ", pic='" + pic + '\'' +
+                ", imageKey='" + imageKey + '\'' +
                 '}';
     }
 }

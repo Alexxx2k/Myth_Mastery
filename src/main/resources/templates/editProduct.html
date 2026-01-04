@@ -15,7 +15,7 @@
          th:text="${message}">
     </div>
 
-    <form method="post" th:action="@{/products/update/{id}(id=${product.id})}">
+    <form method="post" th:action="@{/products/update/{id}(id=${product.id})}" enctype="multipart/form-data" id="productForm">
         <div class="form-row">
             <div class="form-group">
                 <label for="name">Название продукта *</label>
@@ -26,10 +26,8 @@
 
             <div class="form-group">
                 <label for="price">Цена (₽) *</label>
-                <input type="number" id="price" name="price" required
-                       min="0" step="0.01"
-                       th:value="${product.price}"
-                       placeholder="0.00">
+                <input type="number" id="price" name="price" required min="0" step="0.01"
+                       th:value="${product.price}" placeholder="0.00">
             </div>
         </div>
 
@@ -41,7 +39,7 @@
                     <option th:each="category : ${categories}"
                             th:value="${category.id}"
                             th:selected="${product.categoryId == category.id}"
-                            th:text="${category.name + ' (' + category.hazard + ', ' + category.rarity + ')'}">
+                            th:text="${category.name}">
                     </option>
                 </select>
             </div>
@@ -61,52 +59,145 @@
 
         <div class="form-group">
             <label for="description">Описание</label>
-            <textarea id="description" name="description" rows="3"
-                      th:text="${product.description}"
-                      placeholder="Подробное описание продукта..."></textarea>
+            <textarea id="description" name="description" rows="3" th:text="${product.description}"
+                      placeholder="Описание продукта..."></textarea>
         </div>
 
         <div class="form-group">
+            <label>Изображение</label>
+
             <div th:if="${product.pic}" class="current-image">
-                <label for="pic">Текущее изображение:</label>
-                <img th:src="@{${product.pic}}"
-                     alt="Текущее изображение"
-                     class="preview-current-image"
-                     onerror="this.style.display='none'">
+                <strong>Текущее изображение:</strong>
+                <div class="image-info">
+                    <img th:src="${product.pic}" alt="Текущее изображение" onerror="this.style.display='none'">
+                </div>
             </div>
 
-            <label for="pic">Ссылка на изображение</label>
-
-            <input type="text" id="pic" name="pic"
-                   th:value="${product.pic}"
-                   placeholder="https://example.com/image.jpg"
-                   oninput="previewImage(this.value)">
-            <div class="image-preview">
-                <img id="preview" class="preview-image" alt="Предпросмотр">
+            <div class="tab-container">
+                <div class="tab active" data-tab="keep">Оставить текущее</div>
+                <div class="tab" data-tab="upload">Загрузить новое</div>
+                <div class="tab" data-tab="existing">Выбрать из существующих</div>
+                <div class="tab" data-tab="remove">Удалить изображение</div>
             </div>
-            <small>Введите URL изображения. Изображение появится в предпросмотре.</small>
+
+            <div id="keep-tab" class="tab-content active">
+                <p>Текущее изображение останется без изменений</p>
+            </div>
+
+            <div id="upload-tab" class="tab-content">
+                <input type="file" name="imageFile" accept="image/*" onchange="previewImage(this)">
+                <div class="preview-container">
+                    <img id="imagePreview" class="preview-image" alt="Предпросмотр">
+                </div>
+            </div>
+
+            <div id="existing-tab" class="tab-content">
+                <div class="search-box">
+                    <input type="text" placeholder="Поиск..." oninput="searchImages(this.value)">
+                </div>
+                <div class="image-grid">
+                    <div th:each="image : ${existingImages}" class="image-item"
+                         th:attr="data-url=${image.url}"
+                         onclick="selectImage(this, this.getAttribute('data-url'))">
+                        <img th:src="${image.url}" th:alt="${image.name}" onerror="this.style.display='none'">
+                        <div class="image-name" th:text="${image.name}"></div>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedImageUrl" name="selectedImageUrl">
+            </div>
+
+            <div id="remove-tab" class="tab-content">
+                <p>Удалить текущее изображение</p>
+            </div>
+
+            <input type="hidden" id="imageOptionField" name="imageOption" value="keep">
         </div>
 
         <div class="button-group">
-            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
             <a th:href="@{/products}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>
 
 <script>
-    function previewImage(url) {
-        const preview = document.getElementById('preview');
-        if (url) {
-            preview.src = url;
+    let currentTab = 'keep';
+    let selectedImage = null;
+
+    function switchTab(tab) {
+        currentTab = tab;
+
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+        document.getElementById(tab + '-tab').classList.add('active');
+
+        document.getElementById('imageOptionField').value = tab;
+
+        if (selectedImage && tab !== 'existing') {
+            selectedImage.classList.remove('selected');
+            selectedImage = null;
+            document.getElementById('selectedImageUrl').value = '';
+        }
+
+        if (tab !== 'upload') {
+            document.querySelector('#upload-tab input[type="file"]').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        if (tab === 'remove') {
+            if (selectedImage) {
+                selectedImage.classList.remove('selected');
+                selectedImage = null;
+            }
+            document.getElementById('selectedImageUrl').value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                switchTab(tabName);
+            });
+        });
+    });
+
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            preview.src = URL.createObjectURL(input.files[0]);
             preview.style.display = 'block';
-            preview.onerror = function() {
-                preview.style.display = 'none';
-            };
+            switchTab('upload');
         } else {
             preview.style.display = 'none';
         }
     }
+
+    function selectImage(element, url) {
+        if (selectedImage) selectedImage.classList.remove('selected');
+        element.classList.add('selected');
+        selectedImage = element;
+        document.getElementById('selectedImageUrl').value = url;
+        switchTab('existing');
+    }
+
+    function searchImages(term) {
+        document.querySelectorAll('.image-item').forEach(item => {
+            const name = item.querySelector('.image-name').textContent.toLowerCase();
+            item.style.display = name.includes(term.toLowerCase()) ? 'block' : 'none';
+        });
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        if (currentTab === 'remove') {
+            if (!confirm('Вы уверены, что хотите удалить изображение?')) {
+                e.preventDefault();
+                return;
+            }
+        }
+    });
 </script>
 </body>
 </html>
