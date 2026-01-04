@@ -35,7 +35,6 @@ public class CityService {
         if (cityRepository.existsByName(city.name())) {
             throw new IllegalArgumentException("Город с названием '" + city.name() + "' уже существует");
         }
-        // Рассчитываем время доставки через API
         Long deliveryTime = calculateDeliveryTime(city.name());
 
         CityEntity entity = new CityEntity(null, city.name(), deliveryTime);
@@ -81,7 +80,7 @@ public class CityService {
             }
 
             Long days = minutes / (60 * 8);
-            return days > 0 ? days : 1; // Минимум 1 день
+            return days > 0 ? days : 1;
 
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при расчете времени доставки: " + e.getMessage());
