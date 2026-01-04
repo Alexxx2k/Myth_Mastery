@@ -30,7 +30,7 @@ public class ProductEntity {
     @Column(name = "description", length = 100)
     private String description;
 
-    @Column(name = "image_key", length = 255) // Храним ключ S3 вместо URL
+    @Column(name = "pic", length = 255) // Храним ключ S3 вместо URL
     private String imageKey;
 
     public ProductEntity() {}
@@ -113,13 +113,6 @@ public class ProductEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    public String getImageUrl(String baseUrl) {
-        if (imageKey == null || imageKey.isEmpty()) {
-            return null;
-        }
-        return baseUrl + "/" + imageKey;
     }
 
     @Override

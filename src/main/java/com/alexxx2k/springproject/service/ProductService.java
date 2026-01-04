@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -57,7 +58,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createProduct(Product product, MultipartFile imageFile) throws Exception {
+    public Product createProduct(Product product, MultipartFile imageFile, String selectedImageUrl) throws Exception {
         validateProduct(product);
 
         if (productRepository.existsByName(product.name().trim())) {
@@ -66,7 +67,8 @@ public class ProductService {
 
         CategoryEntity category = getCategoryById(product.categoryId());
         MythologyEntity mythology = getMythologyById(product.mythologyId());
-        String imageUrl = uploadImageIfPresent(imageFile);
+
+        String imageUrl = determineImageUrl(imageFile, selectedImageUrl, null);
 
         ProductEntity entity = createProductEntity(product, category, mythology, imageUrl);
 
@@ -76,7 +78,8 @@ public class ProductService {
     }
 
     @Transactional
-    public Product updateProduct(Long id, Product product, MultipartFile imageFile) throws Exception {
+    public Product updateProduct(Long id, Product product, MultipartFile imageFile,
+                                 String selectedImageUrl, boolean keepCurrentImage) throws Exception {
         ProductEntity existingEntity = getExistingProduct(id);
 
         validateProduct(product);
@@ -88,7 +91,9 @@ public class ProductService {
         CategoryEntity category = getCategoryById(product.categoryId());
         MythologyEntity mythology = getMythologyById(product.mythologyId());
 
-        String imageUrl = handleImageUpdate(existingEntity.getImageKey(), imageFile);
+        String currentImageUrl = existingEntity.getImageKey();
+        String imageUrl = determineImageUrl(imageFile, selectedImageUrl,
+                keepCurrentImage ? currentImageUrl : null);
 
         updateProductEntity(existingEntity, category, mythology, product, imageUrl);
 
@@ -102,13 +107,25 @@ public class ProductService {
         ProductEntity product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Продукт с ID " + id + " не найден"));
 
-        deleteImageIfExists(product.getImageKey());
+        deleteImageIfExists(product);
 
         productRepository.deleteById(id);
     }
 
     public boolean existsByName(String name) {
         return productRepository.existsByName(name);
+    }
+
+    public List<Map<String, String>> getExistingImages() {
+        return storageService.getExistingImages();
+    }
+
+    public Map<String, String> getImageInfo(String imageUrl) {
+        return storageService.getImageInfo(imageUrl);
+    }
+
+    public List<Map<String, String>> searchImages(String searchTerm) {
+        return storageService.searchImages(searchTerm);
     }
 
     private void validateProduct(Product product) {
@@ -144,10 +161,26 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("Продукт с ID " + id + " не найден"));
     }
 
-    private String uploadImageIfPresent(MultipartFile imageFile) throws Exception {
+    private String determineImageUrl(MultipartFile imageFile, String selectedImageUrl, String currentImageUrl) throws Exception {
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            return uploadImage(imageFile);
+        }
+        else if (selectedImageUrl != null && !selectedImageUrl.trim().isEmpty()) {
+            return selectedImageUrl.trim();
+        }
+        else if (currentImageUrl != null && !currentImageUrl.trim().isEmpty()) {
+            return currentImageUrl.trim();
+        }
+
+        return null;
+    }
+
+    private String uploadImage(MultipartFile imageFile) throws Exception {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                return storageService.uploadProductImage(imageFile);
+                String url = storageService.uploadProductImage(imageFile);
+                return url;
             } catch (Exception e) {
                 throw new IllegalArgumentException("Ошибка при загрузке изображения: " + e.getMessage(), e);
             }
@@ -155,26 +188,13 @@ public class ProductService {
         return null;
     }
 
-    private String handleImageUpdate(String currentImageUrl, MultipartFile newImageFile) throws Exception {
-        if (newImageFile == null || newImageFile.isEmpty()) {
-            return currentImageUrl;
-        }
-
-        deleteImageIfExists(currentImageUrl);
-
-        try {
-            return storageService.uploadProductImage(newImageFile);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Ошибка при загрузке нового изображения: " + e.getMessage(), e);
-        }
-    }
-
-    private void deleteImageIfExists(String imageUrl) {
-        if (imageUrl != null && !imageUrl.isEmpty()) {
+    private void deleteImageIfExists(ProductEntity entity) {
+        if (entity.getImageKey() != null && !entity.getImageKey().isEmpty()) {
             try {
-                storageService.deleteProductImage(imageUrl);
+                entity.setImageKey(null);
             } catch (Exception e) {
-                System.err.println("Ошибка при удалении изображения из хранилища: " + e.getMessage());
+                throw new IllegalArgumentException("Ошибка при удалении изображения из хранилища: " +
+                        e.getMessage());
             }
         }
     }
@@ -199,7 +219,13 @@ public class ProductService {
         entity.setName(product.name().trim());
         entity.setPrice(product.price() != null ? product.price() : BigDecimal.ZERO);
         entity.setDescription(product.description() != null ? product.description() : "");
-        entity.setImageKey(imageUrl);
+
+        if (imageUrl != null && !imageUrl.equals(entity.getImageKey())) {
+            entity.setImageKey(imageUrl);
+        } else if (imageUrl == null && entity.getImageKey() != null) {
+            deleteImageIfExists(entity);
+            entity.setImageKey(null);
+        }
     }
 
     private Product toDomainProduct(ProductEntity entity) {

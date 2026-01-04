@@ -9,9 +9,8 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class YandexS3StorageService {
@@ -35,14 +34,12 @@ public class YandexS3StorageService {
         try {
             validateImageFile(imageFile);
 
-            String fileName = generateFileName(imageFile.getOriginalFilename());
-            String fileKey = productImagesFolder + "/" + fileName;
+            String fileKey = productImagesFolder + "/" + imageFile.getOriginalFilename();
 
-            System.out.println("=== Загрузка в Yandex Cloud S3 ===");
-            System.out.println("Bucket: " + bucketName);
-            System.out.println("Key: " + fileKey);
-            System.out.println("Content-Type: " + imageFile.getContentType());
-            System.out.println("Size: " + imageFile.getSize() + " bytes");
+            if (fileExistsInS3(fileKey)) {
+                throw new IOException("Файл с именем '" + imageFile.getOriginalFilename() +
+                        "' уже существует в хранилище. Пожалуйста, выберите другое имя или переименуйте файл.");
+            }
 
             ensureBucketExists();
 
@@ -64,105 +61,125 @@ public class YandexS3StorageService {
             }
 
             String publicUrl = getPublicUrl(fileKey);
-            System.out.println("Успешно загружено: " + publicUrl);
-            System.out.println("=== Загрузка завершена ===");
 
             return publicUrl;
 
         } catch (S3Exception e) {
-            System.err.println("=== YANDEX S3 ERROR ===");
-            System.err.println("Status: " + e.statusCode());
-            System.err.println("Error Code: " + e.awsErrorDetails().errorCode());
-            System.err.println("Error Message: " + e.awsErrorDetails().errorMessage());
-            System.err.println("=== END ERROR ===");
-
             throw new IOException("Ошибка Yandex Cloud S3: " +
-                    e.awsErrorDetails().errorCode() + " - " +
                     e.awsErrorDetails().errorMessage(), e);
         } catch (Exception e) {
             throw new IOException("Ошибка загрузки: " + e.getMessage(), e);
         }
     }
 
-    public void deleteProductImage(String imageUrl) {
+    public List<Map<String, String>> getExistingImages() {
         try {
-            if (imageUrl == null || imageUrl.isEmpty()) {
-                return;
+            String prefix = productImagesFolder + "/";
+
+            ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix(prefix)
+                    .build();
+
+            ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+
+            List<Map<String, String>> images = new ArrayList<>();
+
+            for (S3Object s3Object : listResponse.contents()) {
+                if (!s3Object.key().endsWith("/") && isImageFile(s3Object.key())) {
+                    Map<String, String> imageInfo = new HashMap<>();
+                    imageInfo.put("key", s3Object.key());
+                    imageInfo.put("url", getPublicUrl(s3Object.key()));
+                    imageInfo.put("name", extractFileName(s3Object.key()));
+                    imageInfo.put("size", formatFileSize(s3Object.size()));
+                    imageInfo.put("lastModified", s3Object.lastModified().toString());
+
+                    images.add(imageInfo);
+                }
             }
 
+            return images;
+
+        } catch (Exception e) {
+            System.err.println("Ошибка получения списка изображений: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private boolean isImageFile(String fileName) {
+        String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg"};
+        String lowerFileName = fileName.toLowerCase();
+
+        for (String ext : imageExtensions) {
+            if (lowerFileName.endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String extractFileName(String key) {
+        if (key.contains("/")) {
+            return key.substring(key.lastIndexOf("/") + 1);
+        }
+        return key;
+    }
+
+    private String formatFileSize(long size) {
+        if (size < 1024) {
+            return size + " B";
+        } else if (size < 1024 * 1024) {
+            return String.format("%.1f KB", size / 1024.0);
+        } else {
+            return String.format("%.1f MB", size / (1024.0 * 1024.0));
+        }
+    }
+
+    public Map<String, String> getImageInfo(String imageUrl) {
+        try {
             String fileKey = extractFileKeyFromUrl(imageUrl);
-            if (fileKey != null && !fileKey.isEmpty()) {
-                System.out.println("Удаление из Yandex S3: " + fileKey);
-
-                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(fileKey)
-                        .build();
-
-                s3Client.deleteObject(deleteObjectRequest);
-                System.out.println("Успешно удалено");
+            if (fileKey == null || fileKey.isEmpty()) {
+                return null;
             }
-        } catch (Exception e) {
-            System.err.println("Ошибка удаления из Yandex S3: " + e.getMessage());
-        }
-    }
 
-    private void ensureBucketExists() throws IOException {
-        try {
-            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+            HeadObjectRequest headRequest = HeadObjectRequest.builder()
                     .bucket(bucketName)
+                    .key(fileKey)
                     .build();
 
-            s3Client.headBucket(headBucketRequest);
-            System.out.println("Bucket существует: " + bucketName);
+            HeadObjectResponse headResponse = s3Client.headObject(headRequest);
 
-        } catch (S3Exception e) {
-            if (e.statusCode() == 404) {
-                System.out.println("Bucket не существует, создаем: " + bucketName);
-                createBucket();
-            } else {
-                throw new IOException("Ошибка проверки bucket: " + e.getMessage(), e);
-            }
-        }
-    }
+            Map<String, String> imageInfo = new HashMap<>();
+            imageInfo.put("key", fileKey);
+            imageInfo.put("url", imageUrl);
+            imageInfo.put("name", extractFileName(fileKey));
+            imageInfo.put("contentType", headResponse.contentType());
+            imageInfo.put("size", formatFileSize(headResponse.contentLength()));
+            imageInfo.put("lastModified", headResponse.lastModified().toString());
 
-    private void createBucket() throws IOException {
-        try {
-            CreateBucketRequest createBucketRequest = CreateBucketRequest.builder()
-                    .bucket(bucketName)
-                    .build();
-
-            s3Client.createBucket(createBucketRequest);
-            System.out.println("Bucket создан: " + bucketName);
-
-            setBucketPublicAccess();
+            return imageInfo;
 
         } catch (Exception e) {
-            throw new IOException("Ошибка создания bucket: " + e.getMessage(), e);
+            System.err.println("Ошибка получения информации об изображении: " + e.getMessage());
+            return null;
         }
     }
 
-    private void setBucketPublicAccess() {
-        try {
-            String bucketPolicy = String.format(
-                    "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":[\"s3:GetObject\"],\"Resource\":[\"arn:aws:s3:::%s/*\"]}]}",
-                    bucketName
-            );
+    public List<Map<String, String>> searchImages(String searchTerm) {
+        List<Map<String, String>> allImages = getExistingImages();
 
-            PutBucketPolicyRequest putBucketPolicyRequest = PutBucketPolicyRequest.builder()
-                    .bucket(bucketName)
-                    .policy(bucketPolicy)
-                    .build();
-
-            s3Client.putBucketPolicy(putBucketPolicyRequest);
-            System.out.println("Публичный доступ настроен для bucket: " + bucketName);
-
-        } catch (Exception e) {
-            System.err.println("Ошибка настройки публичного доступа: " + e.getMessage());
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return allImages;
         }
+
+        String searchLower = searchTerm.toLowerCase().trim();
+
+        return allImages.stream()
+                .filter(image -> image.get("name").toLowerCase().contains(searchLower))
+                .collect(Collectors.toList());
     }
 
-    private void validateImageFile(MultipartFile imageFile) throws IOException {
+    private void validateImageFile(MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) {
             throw new IllegalArgumentException("Файл пустой");
         }
@@ -173,19 +190,8 @@ public class YandexS3StorageService {
 
         String contentType = imageFile.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Поддерживаются только изображения (JPEG, PNG, GIF, WebP)");
+            throw new IllegalArgumentException("Поддерживаются только изображения (JPEG, PNG, GIF)");
         }
-    }
-
-    private String generateFileName(String originalFileName) {
-        String extension = ".jpg";
-        if (originalFileName != null && originalFileName.contains(".")) {
-            String ext = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
-            if (ext.matches("(?i)\\.(jpg|jpeg|png|gif|webp|bmp|svg)$")) {
-                extension = ext;
-            }
-        }
-        return UUID.randomUUID().toString() + extension;
     }
 
     private String getPublicUrl(String fileKey) {
@@ -199,42 +205,33 @@ public class YandexS3StorageService {
         return imageUrl.replace(publicUrlPrefix + "/", "");
     }
 
-    public void testConnection() throws IOException {
+    private void ensureBucketExists() throws IOException {
         try {
-            System.out.println("=== Тестирование подключения к Yandex Cloud S3 ===");
-            System.out.println("Bucket: " + bucketName);
-            System.out.println("Region: " + s3Client.serviceClientConfiguration().region());
-
             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                     .bucket(bucketName)
                     .build();
 
             s3Client.headBucket(headBucketRequest);
-            System.out.println("✓ Подключение к bucket установлено");
-
-            String testKey = productImagesFolder + "/test-connection.txt";
-            PutObjectRequest putRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(testKey)
-                    .build();
-
-            s3Client.putObject(putRequest, RequestBody.fromString("Test connection"));
-            System.out.println("✓ Тестовый файл загружен: " + testKey);
-
-            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(testKey)
-                    .build();
-
-            s3Client.deleteObject(deleteRequest);
-            System.out.println("✓ Тестовый файл удален");
-
-            System.out.println("=== Тест пройден успешно! ===");
 
         } catch (S3Exception e) {
-            throw new IOException("Yandex Cloud S3 Error: " +
-                    e.awsErrorDetails().errorCode() + " - " +
-                    e.awsErrorDetails().errorMessage(), e);
+            throw new IOException("Ошибка проверки bucket: " + e.getMessage(), e);
+        }
+    }
+
+    private boolean fileExistsInS3(String fileKey) {
+        try {
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileKey)
+                    .build();
+
+            s3Client.headObject(headObjectRequest);
+            return true;
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) {
+                return false;
+            }
+            throw e;
         }
     }
 }
