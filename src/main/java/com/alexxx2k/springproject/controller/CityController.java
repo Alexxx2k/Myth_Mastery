@@ -36,14 +36,16 @@ public class CityController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public String createCity(@RequestParam String name,
-                             @RequestParam Long deliveryTime,
-                             Model model) {
+    public String createCity(@RequestParam String name, Model model) {
         try {
-            City cityDto = new City(null, name, deliveryTime);
-            cityService.createCity(cityDto);
-            model.addAttribute("message", "Город успешно добавлен!");
+            City cityDto = new City(null, name, null);
+            City createdCity = cityService.createCity(cityDto);
+
+            model.addAttribute("message",
+                    "Город '" + createdCity.name() + "' успешно добавлен! " +
+                            "Время доставки: " + createdCity.deliveryTime() + " дней");
             model.addAttribute("messageType", "success");
+
         } catch (Exception e) {
             model.addAttribute("message", "Ошибка при добавлении города: " + e.getMessage());
             model.addAttribute("messageType", "error");
@@ -57,6 +59,7 @@ public class CityController {
         try {
             City city = cityService.getCityById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Город с ID " + id + " не найден"));
+
             model.addAttribute("city", city);
             return "editCity";
         } catch (Exception e) {
@@ -74,9 +77,11 @@ public class CityController {
                              Model model) {
         try {
             City city = new City(id, name, deliveryTime);
-            cityService.updateCity(id, city);
+            City updatedCity = cityService.updateCity(id, city);
+
             model.addAttribute("message", "Город успешно обновлен!");
             model.addAttribute("messageType", "success");
+
         } catch (Exception e) {
             model.addAttribute("message", "Ошибка при обновлении города: " + e.getMessage());
             model.addAttribute("messageType", "error");
@@ -91,12 +96,8 @@ public class CityController {
             cityService.deleteCity(id);
             redirectAttributes.addFlashAttribute("message", "Город успешно удален!");
             redirectAttributes.addFlashAttribute("messageType", "success");
-        }
-        catch (DataIntegrityViolationException e) {
-            redirectAttributes.addFlashAttribute(
-                    "message",
-                    "Невозможно удалить город: Сначала удалите все связанные объекты"
-            );
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Ошибка при удалении города: " + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
         return "redirect:/cities";

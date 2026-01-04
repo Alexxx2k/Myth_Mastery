@@ -1,5 +1,6 @@
 package com.alexxx2k.springproject.service;
 
+import com.alexxx2k.springproject.deliveryTimeCalc.DeliveryTimeCalculator;
 import com.alexxx2k.springproject.domain.dto.City;
 import com.alexxx2k.springproject.domain.entities.CityEntity;
 import com.alexxx2k.springproject.repository.CityRepository;
@@ -34,8 +35,10 @@ public class CityService {
         if (cityRepository.existsByName(city.name())) {
             throw new IllegalArgumentException("Город с названием '" + city.name() + "' уже существует");
         }
+        // Рассчитываем время доставки через API
+        Long deliveryTime = calculateDeliveryTime(city.name());
 
-        CityEntity entity = new CityEntity(null, city.name(), city.deliveryTime());
+        CityEntity entity = new CityEntity(null, city.name(), deliveryTime);
         CityEntity savedEntity = cityRepository.save(entity);
         return toDomainCity(savedEntity);
     }
@@ -52,6 +55,7 @@ public class CityService {
 
         existingEntity.setName(city.name());
         existingEntity.setDeliveryTime(city.deliveryTime());
+
         CityEntity savedEntity = cityRepository.save(existingEntity);
         return toDomainCity(savedEntity);
     }
@@ -66,6 +70,22 @@ public class CityService {
 
     public boolean existsByName(String name) {
         return cityRepository.existsByName(name);
+    }
+
+    private Long calculateDeliveryTime(String cityName) {
+        try {
+            Long minutes = DeliveryTimeCalculator.getMinutes(cityName);
+
+            if (minutes == null) {
+                throw new RuntimeException("Не удалось рассчитать время доставки для города: " + cityName);
+            }
+
+            Long days = minutes / (60 * 8);
+            return days > 0 ? days : 1; // Минимум 1 день
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при расчете времени доставки: " + e.getMessage());
+        }
     }
 
     private City toDomainCity(CityEntity entity) {
