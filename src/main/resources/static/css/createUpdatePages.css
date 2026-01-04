@@ -61,6 +61,7 @@ textarea {
     color: #e0e0e0;
     transition: border-color 0.3s;
     font-family: 'Segoe UI', Arial, sans-serif;
+    resize: none;
 }
 
 input[type="text"]:focus,
