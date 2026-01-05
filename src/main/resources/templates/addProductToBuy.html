@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавить товар в заказ - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{'/buy-products/by-buy/' + ${buyId}}" class="btn btn-secondary">← Назад к заказу</a>
+    <h1>Добавить товар в заказ #<span th:text="${buyId}"></span></h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div th:if="${buy}" class="buy-info">
+        <h3>Информация о заказе:</h3>
+        <p>Клиент ID: <strong th:text="${buy.customerId}"></strong></p>
+        <p th:if="${buy.description}">Описание: <span th:text="${buy.description}"></span></p>
+    </div>
+
+    <form method="post" th:action="@{'/buy-products/add/' + ${buyId}}">
+        <div class="form-group">
+            <label for="productId">Выберите товар *</label>
+            <select id="productId" name="productId" required>
+                <option value="">-- Выберите товар --</option>
+                <option th:each="product : ${products}"
+                        th:value="${product.id}"
+                        th:text="${product.name + ' (' + #numbers.formatDecimal(product.price, 1, 2) + ' руб.)'}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Количество *</label>
+            <input type="number" id="amount" name="amount" value="1" min="1" required>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Добавить в заказ</button>
+            <a th:href="@{'/buy-products/by-buy/' + ${buyId}}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

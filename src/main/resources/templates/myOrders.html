@@ -16,7 +16,8 @@
                 Пользователь: <strong th:text="${customerEmail}"></strong>
             </div>
         </div>
-        <a th:href="@{/buys/new}" class="user-action-btn user-action-btn-success">➕ Новый заказ</a>
+        <!-- ИСПРАВЛЕНА ССЫЛКА -->
+        <a th:href="@{/buy-products/new}" class="user-action-btn user-action-btn-success">➕ Новый заказ</a>
     </div>
 
     <div th:if="${message}"
@@ -28,7 +29,8 @@
         <div class="empty-state-icon">📦</div>
         <h3>У вас пока нет заказов</h3>
         <p>Сделайте свой первый заказ и он появится здесь</p>
-        <a th:href="@{/buys/new}" class="user-action-btn user-action-btn-success" style="margin-top: 20px; padding: 12px 30px;">
+        <!-- ИСПРАВЛЕНА ССЫЛКА -->
+        <a th:href="@{/buy-products/new}" class="user-action-btn user-action-btn-success" style="margin-top: 20px; padding: 12px 30px;">
             Создать первый заказ
         </a>
     </div>
@@ -42,11 +44,12 @@
                 </div>
             </div>
             <div>
-                <span class="order-status status-new" th:if="${buy.buyStepId == null}">
+                <!-- ИСПРАВЛЕНО: buyStepId может быть 1L для "Новый" -->
+                <span class="order-status status-new" th:if="${buy.buyStepId == null || buy.buyStepId == 1}">
                     Новый
                 </span>
-                <span class="order-status status-processing" th:if="${buy.buyStepId != null}">
-                    В обработке
+                <span class="order-status status-processing" th:if="${buy.buyStepId != null && buy.buyStepId != 1}">
+                    Шаг #<span th:text="${buy.buyStepId}"></span>
                 </span>
             </div>
         </div>
@@ -61,14 +64,49 @@
             Нет дополнительных комментариев
         </div>
 
+        <!-- ДОБАВИТЬ КНОПКУ ДЛЯ ПРОСМОТРА ТОВАРОВ В ЗАКАЗЕ -->
+        <div class="order-actions">
+            <a th:href="@{'/buy-products/by-buy/' + ${buy.id}}" class="btn-view-products">
+                📋 Просмотреть товары в заказе
+            </a>
+        </div>
+
         <div class="order-footer">
             <small>Статус заказа можно уточнить у администратора</small>
         </div>
     </div>
 
     <div th:if="${!#lists.isEmpty(buyList)}" class="create-new-section">
-        <a th:href="@{/buys/new}" class="user-action-btn">Создать еще один заказ</a>
+        <!-- ИСПРАВЛЕНА ССЫЛКА -->
+        <a th:href="@{/buy-products/new}" class="user-action-btn">Создать еще один заказ</a>
     </div>
 </div>
+
+<style>
+    /* Дополнительные стили для кнопки просмотра товаров */
+    .order-actions {
+        margin: 15px 0;
+        padding: 10px 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .btn-view-products {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #f8f9fa;
+        color: #007bff;
+        text-decoration: none;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        font-size: 0.9em;
+        transition: all 0.3s;
+    }
+
+    .btn-view-products:hover {
+        background-color: #e9ecef;
+        text-decoration: underline;
+    }
+</style>
 </body>
 </html>

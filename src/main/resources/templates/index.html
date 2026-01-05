@@ -25,15 +25,14 @@
             <a th:href="@{/categories}">Категории</a>
             <a th:href="@{/steps}">Шаги</a>
             <a th:href="@{/buy-steps}">Шаги покупки</a>
-            <a th:href="@{/buys}">Заказы</a>
+            <a th:href="@{/buy-products}">Состав заказов</a>
         </div>
 
         <div sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/customers}">Управление клиентами</a>
         </div>
-
         <div sec:authorize="hasRole('USER')">
-            <a th:href="@{/buys/new}">Новый заказ</a>
+            <a th:href="@{/buy-products/new}">Новый заказ</a>
             <a th:href="@{/buys/my-orders}">Мои заказы</a>
         </div>
     </div>
