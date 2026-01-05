@@ -6,8 +6,8 @@
 </head>
 <body>
 <div class="container">
-    <a th:href="@{/buy-products}" class="back-link">← К составу заказов</a>
-    <a th:href="@{/buys}" class="back-link" style="margin-left: 10px;">← Все заказы</a>
+    <a th:href="@{/}" class="back-link" style="margin-left: 10px;">← На главную</a>
+    <a th:href="@{/buys/my-orders}" class="back-link" style="margin-left: 10px;">← Мои заказы</a>
 
     <h1>Товары в заказе #<span th:text="${buyId}"></span></h1>
 

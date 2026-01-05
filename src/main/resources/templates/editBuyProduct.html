@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Изменить количество - MythMastery</title>
     <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
 </head>
 <body>
 <div class="container">
-    <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}" class="btn btn-secondary">← Назад</a>
+    <!-- ДВЕ ССЫЛКИ В ЗАВИСИМОСТИ ОТ РОЛИ -->
+    <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
+       class="btn btn-secondary"
+       sec:authorize="!hasRole('ADMIN')">← Назад к заказу</a>
+
+    <a th:href="@{/buy-products}"
+       class="btn btn-secondary"
+       sec:authorize="hasRole('ADMIN')">← Назад к списку</a>
+
     <h1>Изменить количество товара</h1>
 
     <div th:if="${message}"
@@ -31,7 +40,15 @@
 
         <div class="button-group">
             <button type="submit" class="btn btn-primary">Сохранить</button>
-            <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}" class="btn btn-secondary">Отмена</a>
+
+            <!-- ДВЕ КНОПКИ ОТМЕНЫ -->
+            <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
+               class="btn btn-secondary"
+               sec:authorize="!hasRole('ADMIN')">Отмена</a>
+
+            <a th:href="@{/buy-products}"
+               class="btn btn-secondary"
+               sec:authorize="hasRole('ADMIN')">Отмена</a>
         </div>
     </form>
 </div>

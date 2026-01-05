@@ -2,77 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Новый заказ - MythMastery</title>
-    <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
     <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
-    <style>
-        .cart-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .customer-info {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .product-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .product-card:hover {
-            border-color: #007bff;
-        }
-        .product-card.in-cart {
-            border-color: #28a745;
-            background-color: #f0fff4;
-        }
-        .product-quantity {
-            float: right;
-            background: #28a745;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.9em;
-        }
-        .cart-items {
-            margin: 20px 0;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .cart-stats {
-            display: flex;
-            justify-content: space-between;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-        }
-    </style>
 </head>
 <body>
-<div class="cart-container">
-    <a th:href="@{/}" class="back-link">← На главную</a>
-    <a th:href="@{/buys/my-orders}" class="back-link" style="margin-left: 10px;">← Мои заказы</a>
-
-    <h1>Создание нового заказа</h1>
+<div class="container">
+    <a th:href="@{/buys/my-orders}" class="btn btn-secondary">← Мои заказы</a>
+    <h1>Создать новый заказ</h1>
 
     <div th:if="${message}"
          th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
@@ -80,230 +15,24 @@
     </div>
 
     <div class="customer-info">
-        <h3>Информация о заказчике</h3>
-        <p>Email: <strong th:text="${customerEmail}"></strong></p>
-        <p>ID клиента: <strong th:text="${customerId}"></strong></p>
-        <input type="hidden" id="customerId" th:value="${customerId}">
+        <p><strong>Клиент:</strong> <span th:text="${customerEmail}"></span></p>
+        <p><strong>ID клиента:</strong> <span th:text="${customerId}"></span></p>
     </div>
 
-    <h3>Выберите товары</h3>
-    <p>Нажмите на товар, чтобы добавить в корзину</p>
-
-    <div class="products-grid" id="productsGrid">
-        <div th:each="product : ${products}"
-             class="product-card"
-             th:data-id="${product.id}"
-             th:data-price="${product.price}"
-             th:data-name="${product.name}"
-             onclick="addToCart(this)">
-            <div class="product-quantity" th:id="'qty-badge-' + ${product.id}" style="display: none;">0</div>
-            <h4 th:text="${product.name}"></h4>
-            <p th:text="${'₽' + #numbers.formatDecimal(product.price, 1, 2)}"></p>
-            <div th:if="${product.categoryName}">
-                Категория: <span th:text="${product.categoryName}"></span>
-            </div>
-            <div th:if="${product.mythologyName}">
-                Мифология: <span th:text="${product.mythologyName}"></span>
-            </div>
-            <small>ID: <span th:text="${product.id}"></span></small>
-        </div>
-    </div>
-
-    <h3>Ваша корзина</h3>
-
-    <div class="cart-stats">
-        <div>
-            <span style="font-size: 1.5em;" id="cartItemsCount">0</span>
-            <br><small>Товаров</small>
-        </div>
-        <div>
-            <span style="font-size: 1.5em;" id="cartTotalItems">0</span>
-            <br><small>Всего единиц</small>
-        </div>
-        <div>
-            <span style="font-size: 1.5em;" id="cartTotalPrice">0.00</span>
-            <br><small>Сумма (₽)</small>
-        </div>
-    </div>
-
-    <div class="cart-items" id="cartItems">
-        <div class="empty-cart" id="emptyCartMessage">
-            <p>Корзина пуста</p>
-        </div>
-    </div>
-
-    <form method="post" th:action="@{/buy-products/create}" id="orderForm">
-        <!-- customerId должен передаваться -->
+    <form method="post" th:action="@{/buy-products/create}">
         <input type="hidden" name="customerId" th:value="${customerId}">
 
-        <!-- productIds должно заполняться JavaScript -->
-        <input type="hidden" name="productIds" id="productIdsInput">
-
-        <!-- description (опционально) -->
         <div class="form-group">
-            <label for="description">Комментарий к заказу:</label>
-            <textarea id="description" name="description" rows="3"
-                      placeholder="Дополнительные пожелания..."></textarea>
+            <label for="description">Описание заказа (необязательно)</label>
+            <textarea id="description" name="description" rows="4"
+                      placeholder="Опишите детали вашего заказа..."></textarea>
         </div>
 
         <div class="button-group">
-            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
-                Создать заказ
-            </button>
-            <button type="button" class="btn btn-secondary" onclick="clearCart()">
-                Очистить корзину
-            </button>
+            <button type="submit" class="btn btn-primary">Создать заказ</button>
+            <a th:href="@{/buys/my-orders}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>
-
-<script>
-    let cart = {};
-
-    function addToCart(element) {
-        const productId = element.dataset.id;
-        const productName = element.dataset.name;
-        const productPrice = parseFloat(element.dataset.price);
-
-        // Проверяем, есть ли уже товар в корзине
-        if (cart[productId]) {
-            // Увеличиваем количество на 1
-            cart[productId].amount += 1;
-        } else {
-            // Добавляем новый товар с количеством 1
-            cart[productId] = {
-                name: productName,
-                price: productPrice,
-                amount: 1
-            };
-            element.classList.add('in-cart');
-        }
-
-        // Обновляем отображение
-        updateProductBadge(productId);
-        updateCartDisplay();
-    }
-
-    function updateProductBadge(productId) {
-        const badge = document.getElementById('qty-badge-' + productId);
-        if (badge) {
-            const quantity = cart[productId] ? cart[productId].amount : 0;
-            if (quantity > 0) {
-                badge.textContent = quantity;
-                badge.style.display = 'block';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-    }
-
-    function updateCartDisplay() {
-        const cartItemsDiv = document.getElementById('cartItems');
-        const emptyCartMsg = document.getElementById('emptyCartMessage');
-        const submitBtn = document.getElementById('submitBtn');
-        const productIdsInput = document.getElementById('productIdsInput');
-
-        // Считаем статистику
-        const totalItems = Object.keys(cart).length; // количество разных товаров
-        const totalUnits = Object.values(cart).reduce((sum, item) => sum + item.amount, 0); // общее количество штук
-        const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.amount), 0);
-
-        // Обновляем статистику вверху
-        document.getElementById('cartItemsCount').textContent = totalItems;
-        document.getElementById('cartTotalItems').textContent = totalUnits;
-        document.getElementById('cartTotalPrice').textContent = totalPrice.toFixed(2);
-
-        // Если корзина пуста
-        if (totalItems === 0) {
-            emptyCartMsg.style.display = 'block';
-            cartItemsDiv.innerHTML = '<div class="empty-cart" id="emptyCartMessage"><p>Корзина пуста</p></div>';
-            submitBtn.disabled = true;
-            productIdsInput.value = '';
-            return;
-        }
-
-        // Скрываем сообщение о пустой корзине
-        emptyCartMsg.style.display = 'none';
-
-        // Формируем список товаров в корзине
-        let html = '';
-        let productIdsArray = [];
-
-        // Для каждого товара в корзине
-        Object.entries(cart).forEach(([productId, item]) => {
-            const itemTotal = item.price * item.amount;
-
-            // Формируем строку для скрытого поля: "productId:amount"
-            productIdsArray.push(productId + ':' + item.amount);
-
-            // Формируем HTML для отображения товара в корзине
-            html += `
-                <div class="cart-item">
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        <small>ID: ${productId} | ${item.price.toFixed(2)} ₽/шт</small>
-                    </div>
-                    <div style="text-align: right;">
-                        <div><strong>${item.amount} шт.</strong></div>
-                        <div style="color: #28a745; font-weight: bold;">${itemTotal.toFixed(2)} ₽</div>
-                    </div>
-                </div>
-            `;
-        });
-
-        // Обновляем отображение
-        cartItemsDiv.innerHTML = html;
-        submitBtn.disabled = false;
-        productIdsInput.value = productIdsArray.join(',');
-
-        // Обновляем все бейджи на карточках товаров
-        Object.keys(cart).forEach(productId => updateProductBadge(productId));
-    }
-
-    function clearCart() {
-        if (Object.keys(cart).length === 0) {
-            alert('Корзина уже пуста!');
-            return;
-        }
-
-        if (!confirm('Очистить всю корзину?')) return;
-
-        // Убираем класс "в корзине" со всех карточек
-        Object.keys(cart).forEach(productId => {
-            const element = document.querySelector(`.product-card[data-id="${productId}"]`);
-            if (element) {
-                element.classList.remove('in-cart');
-            }
-            // Скрываем бейджи
-            const badge = document.getElementById('qty-badge-' + productId);
-            if (badge) {
-                badge.style.display = 'none';
-            }
-        });
-
-        // Очищаем корзину
-        cart = {};
-
-        // Обновляем отображение
-        updateCartDisplay();
-        alert('Корзина очищена!');
-    }
-
-    // Валидация формы при отправке
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-        if (Object.keys(cart).length === 0) {
-            e.preventDefault();
-            alert('❌ Корзина пуста! Выберите хотя бы один товар для заказа.');
-            return false;
-        }
-
-        return confirm('Подтвердить создание заказа?');
-    });
-
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        updateCartDisplay();
-    });
-</script>
 </body>
 </html>

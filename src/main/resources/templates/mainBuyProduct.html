@@ -14,12 +14,6 @@
          th:text="${message}">
     </div>
 
-    <div class="menu">
-        <a th:href="@{/buy-products/new}" class="btn-add">Создать новый заказ</a>
-        <a th:href="@{/buys}" class="btn-link">Все заказы</a>
-        <a th:href="@{/products}" class="btn-link">Все товары</a>
-    </div>
-
     <table>
         <thead>
         <tr>
@@ -39,9 +33,9 @@
         <tr th:each="bp : ${buyProductList}">
             <td th:text="${bp.id}"></td>
             <td>
-                <a th:href="@{/buy-products/by-buy/{id}(id=${bp.buyId})}" class="btn-link">
+                <div class="small-text">
                     Заказ #<span th:text="${bp.buyId}"></span>
-                </a>
+                </div>
                 <div class="small-text">Клиент ID: <span th:text="${bp.buyCustomerId}"></span></div>
             </td>
             <td>

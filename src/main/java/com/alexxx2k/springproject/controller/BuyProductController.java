@@ -37,7 +37,6 @@ public class BuyProductController {
         this.customerService = customerService;
     }
 
-    // ========== НОВЫЙ ЗАКАЗ (создание) ==========
     @GetMapping("/new")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String showNewBuyForm(Model model) {
@@ -46,10 +45,9 @@ public class BuyProductController {
             String customerEmail = auth.getName();
             Long customerId = customerService.getCustomerIdByEmail(customerEmail);
 
-            model.addAttribute("products", productService.getAllProducts());
             model.addAttribute("customerEmail", customerEmail);
             model.addAttribute("customerId", customerId);
-            return "newBuyWithProducts";
+            return "newBuyWithProducts"; // упрощенная форма
         } catch (Exception e) {
             model.addAttribute("message", "Ошибка: " + e.getMessage());
             model.addAttribute("messageType", "error");
@@ -62,31 +60,19 @@ public class BuyProductController {
     public String createBuyWithProducts(
             @RequestParam Long customerId,
             @RequestParam(required = false) String description,
-            @RequestParam String productIds,
             RedirectAttributes redirectAttributes) {
 
         try {
-            // 1. Создаем заказ
+            // Создаем заказ без товаров
             var buy = buyService.createBuy(customerId, description, 1L);
             Long buyId = buy.id();
 
-            // 2. Парсим товары
-            List<BuyProductService.CartItem> cartItems = parseProductIds(productIds);
-
-            if (cartItems.isEmpty()) {
-                throw new IllegalArgumentException("Не выбрано ни одного товара");
-            }
-
-            // 3. Добавляем товары в заказ
-            for (var item : cartItems) {
-                buyProductService.addProductToBuy(buyId, item.productId(), item.amount());
-            }
-
             redirectAttributes.addFlashAttribute("message",
-                    "✅ Заказ #" + buyId + " успешно создан! Добавлено товаров: " + cartItems.size());
+                    "✅ Заказ #" + buyId + " успешно создан!");
             redirectAttributes.addFlashAttribute("messageType", "success");
 
-            return "redirect:/buys/my-orders";
+            // Редирект на страницу заказа, где можно добавить товары
+            return "redirect:/buy-products/by-buy/" + buyId;
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message",
