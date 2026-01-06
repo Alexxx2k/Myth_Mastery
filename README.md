@@ -46,7 +46,11 @@ ___
 Логи, бэкапы, медиа: ~1 ТБ.
 
 ### Диаграммы C4 Model
-*Не реализовано*
+#### System context diagram
+![MMDB](src/main/resources/images/sys_context.png)
+
+#### Container diagram
+![MMDB](src/main/resources/images/cont_view.png)
 
 ### Контракты API
 *Не реализовано*
