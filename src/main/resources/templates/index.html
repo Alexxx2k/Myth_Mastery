@@ -29,7 +29,7 @@
 
         <div sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/customers}">Управление клиентами</a>
-            <a th:href="@{/buy-products}">Состав заказов</a>
+            <a th:href="@{/buy-products}">Продажи</a>
             <a th:href="@{/buys}">Заказы</a>
         </div>
         <div sec:authorize="hasRole('USER')">

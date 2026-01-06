@@ -63,7 +63,6 @@ public class BuyProductController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            // Создаем заказ без товаров
             var buy = buyService.createBuy(customerId, description, 1L);
             Long buyId = buy.id();
 
@@ -71,7 +70,6 @@ public class BuyProductController {
                     "✅ Заказ #" + buyId + " успешно создан!");
             redirectAttributes.addFlashAttribute("messageType", "success");
 
-            // Редирект на страницу заказа, где можно добавить товары
             return "redirect:/buy-products/by-buy/" + buyId;
 
         } catch (Exception e) {
@@ -82,7 +80,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== ГЛАВНАЯ СТРАНИЦА (ADMIN) ==========
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String getAllBuyProducts(Model model) {
@@ -96,7 +93,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== ТОВАРЫ КОНКРЕТНОГО ЗАКАЗА ==========
     @GetMapping("/by-buy/{buyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String getBuyProductsByBuy(@PathVariable Long buyId, Model model) {
@@ -113,7 +109,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== ДОБАВЛЕНИЕ ТОВАРА В СУЩЕСТВУЮЩИЙ ЗАКАЗ ==========
     @GetMapping("/add/{buyId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String showAddProductForm(@PathVariable Long buyId, Model model) {
@@ -148,7 +143,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== РЕДАКТИРОВАНИЕ КОЛИЧЕСТВА ==========
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -182,7 +176,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== УДАЛЕНИЕ ТОВАРА ИЗ ЗАКАЗА ==========
     @PostMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String deleteBuyProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
@@ -208,7 +201,6 @@ public class BuyProductController {
         }
     }
 
-    // ========== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ==========
     private List<BuyProductService.CartItem> parseProductIds(String productIds) {
         List<BuyProductService.CartItem> items = new ArrayList<>();
 
@@ -229,7 +221,6 @@ public class BuyProductController {
                         Integer amount = Integer.parseInt(subParts[1].trim());
                         items.add(new BuyProductService.CartItem(productId, amount));
                     } catch (NumberFormatException e) {
-                        // пропускаем некорректные записи
                     }
                 }
             } else {
@@ -237,7 +228,6 @@ public class BuyProductController {
                     Long productId = Long.parseLong(part.trim());
                     items.add(new BuyProductService.CartItem(productId, 1));
                 } catch (NumberFormatException e) {
-                    // пропускаем некорректные записи
                 }
             }
         }

@@ -36,7 +36,6 @@ public class BuyService {
         BuyEntity buy = new BuyEntity();
         buy.setCustomerId(customerId);
         buy.setDescription(description);
-        // Если buyStepId null - будет использовано дефолтное значение из Entity
         buy.setBuyStepId(buyStepId);
 
         BuyEntity savedBuy = buyRepository.save(buy);

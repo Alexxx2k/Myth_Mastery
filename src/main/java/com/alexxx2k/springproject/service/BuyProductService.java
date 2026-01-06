@@ -29,37 +29,31 @@ public class BuyProductService {
         this.productRepository = productRepository;
     }
 
-    // Получить все связи
     public List<BuyProduct> getAllBuyProducts() {
         return buyProductRepository.findAllWithDetails().stream()
                 .map(this::toDomainBuyProduct)
                 .toList();
     }
 
-    // Получить товары конкретного заказа
     public List<BuyProduct> getBuyProductsByBuyId(Long buyId) {
         return buyProductRepository.findByBuyIdWithDetails(buyId).stream()
                 .map(this::toDomainBuyProduct)
                 .toList();
     }
 
-    // Получить конкретную связь по ID
     public Optional<BuyProduct> getBuyProductById(Long id) {
         return buyProductRepository.findById(id)
                 .map(this::toDomainBuyProduct);
     }
 
-    // Получить связь с детальной информацией по ID
     public Optional<BuyProduct> getBuyProductByIdWithDetails(Long id) {
         return buyProductRepository.findById(id)
                 .map(this::toDomainBuyProduct);
     }
 
-    // Создать новый заказ с товарами (корзина)
     @Transactional
     public Long createBuyWithProducts(Long customerId, String description,
                                       List<CartItem> cartItems) {
-        // Создаем заказ
         BuyEntity buy = new BuyEntity();
         buy.setCustomerId(customerId);
         buy.setDescription(description);
@@ -67,7 +61,6 @@ public class BuyProductService {
 
         BuyEntity savedBuy = buyRepository.save(buy);
 
-        // Добавляем товары в заказ
         for (CartItem item : cartItems) {
             ProductEntity product = productRepository.findById(item.productId())
                     .orElseThrow(() -> new IllegalArgumentException(
@@ -84,7 +77,6 @@ public class BuyProductService {
         return savedBuy.getId();
     }
 
-    // Добавить товар в существующий заказ
     @Transactional
     public BuyProduct addProductToBuy(Long buyId, Long productId, Integer amount) {
         BuyEntity buy = buyRepository.findById(buyId)
@@ -93,18 +85,15 @@ public class BuyProductService {
         ProductEntity product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Товар не найден"));
 
-        // Проверяем, не добавлен ли уже этот товар
         Optional<BuyProductEntity> existing = buyProductRepository
                 .findByBuyIdAndProductId(buyId, productId);
 
         if (existing.isPresent()) {
-            // Увеличиваем количество
             BuyProductEntity entity = existing.get();
             entity.setAmount(entity.getAmount() + amount);
             BuyProductEntity saved = buyProductRepository.save(entity);
             return toDomainBuyProduct(saved);
         } else {
-            // Добавляем новый товар
             BuyProductEntity entity = new BuyProductEntity();
             entity.setBuy(buy);
             entity.setProduct(product);
@@ -115,7 +104,6 @@ public class BuyProductService {
         }
     }
 
-    // Обновить количество товара в заказе
     @Transactional
     public BuyProduct updateProductAmount(Long id, Integer amount) {
         BuyProductEntity entity = buyProductRepository.findById(id)
@@ -130,7 +118,6 @@ public class BuyProductService {
         return toDomainBuyProduct(saved);
     }
 
-    // Удалить товар из заказа
     @Transactional
     public void removeProductFromBuy(Long id) {
         if (!buyProductRepository.existsById(id)) {
@@ -139,7 +126,6 @@ public class BuyProductService {
         buyProductRepository.deleteById(id);
     }
 
-    // Получить общую сумму заказа
     public BigDecimal getTotalPriceByBuyId(Long buyId) {
         List<BuyProductEntity> items = buyProductRepository.findByBuyId(buyId);
         return items.stream()
@@ -153,12 +139,10 @@ public class BuyProductService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Получить количество позиций в заказе
     public int getItemCountByBuyId(Long buyId) {
         return buyProductRepository.findByBuyId(buyId).size();
     }
 
-    // Проверить существование связи
     public boolean existsByBuyIdAndProductId(Long buyId, Long productId) {
         return buyProductRepository.existsByBuyIdAndProductId(buyId, productId);
     }
@@ -185,6 +169,5 @@ public class BuyProductService {
         );
     }
 
-    // DTO для товаров в корзине
     public record CartItem(Long productId, Integer amount) {}
 }

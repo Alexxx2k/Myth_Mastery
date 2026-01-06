@@ -22,7 +22,6 @@ public interface BuyProductRepository extends JpaRepository<BuyProductEntity, Lo
 
     void deleteByProductId(Long productId);
 
-    // Получение с детальной информацией
     @Query("SELECT bp FROM BuyProductEntity bp " +
             "LEFT JOIN FETCH bp.buy " +
             "LEFT JOIN FETCH bp.product p " +
@@ -39,7 +38,6 @@ public interface BuyProductRepository extends JpaRepository<BuyProductEntity, Lo
             "WHERE bp.buy.id = :buyId")
     List<BuyProductEntity> findByBuyIdWithDetails(@Param("buyId") Long buyId);
 
-    // Получить по ID с деталями
     @Query("SELECT bp FROM BuyProductEntity bp " +
             "LEFT JOIN FETCH bp.buy " +
             "LEFT JOIN FETCH bp.product p " +

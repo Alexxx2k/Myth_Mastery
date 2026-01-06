@@ -27,7 +27,6 @@ public class BuyController {
         this.customerService = customerService;
     }
 
-    // ========== АДМИНИСТРАТИВНЫЕ МЕТОДЫ ==========
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String getAllBuys(Model model) {
@@ -109,9 +108,6 @@ public class BuyController {
         }
         return "redirect:/buys";
     }
-
-    // ========== ПОЛЬЗОВАТЕЛЬСКИЕ МЕТОДЫ ==========
-    // УДАЛЕНЫ методы создания заказа - теперь они в BuyProductController
 
     @GetMapping("/my-orders")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")

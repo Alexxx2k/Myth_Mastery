@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Состав заказов - MythMastery</title>
+    <title>Продажи - MythMastery</title>
     <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
 </head>
 <body>
 <div class="container">
     <a th:href="@{/}" class="back-link">← На главную</a>
-    <h1>Состав заказов</h1>
+    <h1>Продажи</h1>
 
     <div th:if="${message}"
          th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
