@@ -26,7 +26,7 @@ public class DGISGeocoder {
         }
 
         JSONObject result = json.getJSONObject("result");
-        if (!result.has("items") || result.getJSONArray("items").isEmpty()) {
+        if (!result.has("items") || result.getJSONArray("items").length() == 0) {
             throw new RuntimeException("Адрес не найден");
         }
 
