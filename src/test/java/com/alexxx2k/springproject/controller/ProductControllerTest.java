@@ -1,4 +1,3 @@
-// ProductControllerTest.java (исправленная версия)
 package com.alexxx2k.springproject.controller;
 
 import com.alexxx2k.springproject.domain.dto.Product;
@@ -49,7 +48,6 @@ class ProductControllerTest {
     @InjectMocks
     private ProductController productController;
 
-    // Общие тестовые данные
     private Product testProduct;
     private Product createdProduct;
     private Product updatedProduct;
@@ -57,7 +55,6 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Инициализация общих тестовых данных
         testProduct = new Product(
                 1L, 1L, "Category1", 1L, "Mythology1",
                 "Test Product", new BigDecimal("99.99"),
@@ -78,7 +75,6 @@ class ProductControllerTest {
 
         productList = List.of(testProduct);
 
-        // Настройка security context
         Authentication auth = new TestingAuthenticationToken(
                 "user", "password",
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
@@ -86,23 +82,18 @@ class ProductControllerTest {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
-    // Вспомогательный метод для настройки общих моков
     private void setupCommonMocks() {
-        // Возвращаем пустые списки правильных типов
         when(categoryService.getAllCategories()).thenReturn(Collections.emptyList());
         when(mythologyService.getAllMythologies()).thenReturn(Collections.emptyList());
     }
 
     @Test
     void getAllProducts_ShouldReturnViewWithProducts() {
-        // Arrange
         when(productService.getAllProducts()).thenReturn(productList);
         setupCommonMocks();
 
-        // Act
         String viewName = productController.getAllProducts(model);
 
-        // Assert
         assertEquals("mainProduct", viewName);
         verify(productService).getAllProducts();
         verify(categoryService).getAllCategories();
@@ -112,13 +103,10 @@ class ProductControllerTest {
 
     @Test
     void showCreateProductForm_ShouldReturnCreateView() {
-        // Arrange
         setupCommonMocks();
 
-        // Act
         String viewName = productController.showCreateProductForm(model);
 
-        // Assert
         assertEquals("createProduct", viewName);
         verify(model).addAttribute(eq("product"), any(Product.class));
         verify(categoryService).getAllCategories();
@@ -127,16 +115,13 @@ class ProductControllerTest {
 
     @Test
     void createProduct_Success_ShouldRedirectWithSuccessMessage() {
-        // Arrange
         when(productService.createProduct(any(Product.class))).thenReturn(createdProduct);
 
-        // Act
         String redirect = productController.createProduct(
                 1L, 1L, "New Product", new BigDecimal("100.00"),
                 "Description", "pic.jpg", redirectAttributes
         );
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).createProduct(any(Product.class));
         verifySuccessMessage("Продукт успешно добавлен!");
@@ -144,10 +129,8 @@ class ProductControllerTest {
 
     @Test
     void createProduct_WithEmptyName_ShouldRedirectWithErrorMessage() {
-        // Act
         String redirect = createProductWithInvalidName("");
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService, never()).createProduct(any());
         verifyErrorMessage("Название продукта не может быть пустым");
@@ -155,10 +138,8 @@ class ProductControllerTest {
 
     @Test
     void createProduct_WithNullName_ShouldRedirectWithErrorMessage() {
-        // Act
         String redirect = createProductWithInvalidName(null);
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService, never()).createProduct(any());
         verifyErrorMessage("Название продукта не может быть пустым");
@@ -166,10 +147,8 @@ class ProductControllerTest {
 
     @Test
     void createProduct_WithWhitespaceName_ShouldRedirectWithErrorMessage() {
-        // Act
         String redirect = createProductWithInvalidName("   ");
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService, never()).createProduct(any());
         verifyErrorMessage("Название продукта не может быть пустым");
@@ -177,17 +156,14 @@ class ProductControllerTest {
 
     @Test
     void createProduct_ServiceThrowsException_ShouldRedirectWithErrorMessage() {
-        // Arrange
         when(productService.createProduct(any(Product.class)))
                 .thenThrow(new RuntimeException("Service error"));
 
-        // Act
         String redirect = productController.createProduct(
                 1L, 1L, "Product", new BigDecimal("100.00"),
                 "Description", "pic.jpg", redirectAttributes
         );
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).createProduct(any());
         verifyErrorMessage("Ошибка при добавлении продукта: Service error");
@@ -195,16 +171,13 @@ class ProductControllerTest {
 
     @Test
     void createProduct_WithNullDescriptionAndPic_ShouldHandleNullValues() {
-        // Arrange
         when(productService.createProduct(any(Product.class))).thenReturn(createdProduct);
 
-        // Act
         String redirect = productController.createProduct(
                 1L, 1L, "Product", new BigDecimal("100.00"),
                 null, null, redirectAttributes
         );
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).createProduct(any(Product.class));
         verifySuccessMessage("Продукт успешно добавлен!");
@@ -212,14 +185,11 @@ class ProductControllerTest {
 
     @Test
     void showEditProductForm_ProductExists_ShouldReturnEditView() {
-        // Arrange
         when(productService.getProductById(1L)).thenReturn(Optional.of(testProduct));
         setupCommonMocks();
 
-        // Act
         String viewName = productController.showEditProductForm(1L, model);
 
-        // Assert
         assertEquals("editProduct", viewName);
         verify(productService).getProductById(1L);
         verify(model).addAttribute("product", testProduct);
@@ -229,13 +199,10 @@ class ProductControllerTest {
 
     @Test
     void showEditProductForm_ProductNotFound_ShouldRedirect() {
-        // Arrange
         when(productService.getProductById(1L)).thenReturn(Optional.empty());
 
-        // Act
         String viewName = productController.showEditProductForm(1L, model);
 
-        // Assert
         assertEquals("redirect:/products", viewName);
         verify(productService).getProductById(1L);
         verify(model).addAttribute("message", "Ошибка: Продукт с ID 1 не найден");
@@ -244,16 +211,13 @@ class ProductControllerTest {
 
     @Test
     void updateProduct_Success_ShouldRedirectWithSuccessMessage() {
-        // Arrange
         when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
 
-        // Act
         String redirect = productController.updateProduct(
                 1L, 1L, 1L, "Updated Product", new BigDecimal("150.00"),
                 "Updated Description", "updated.jpg", redirectAttributes
         );
 
-        // Assert
         assertEquals("redirect:/products/edit/1", redirect);
         verify(productService).updateProduct(eq(1L), any(Product.class));
         verifySuccessMessage("Продукт успешно обновлен!");
@@ -261,10 +225,8 @@ class ProductControllerTest {
 
     @Test
     void updateProduct_WithEmptyName_ShouldRedirectWithErrorMessage() {
-        // Act
         String redirect = updateProductWithInvalidName("");
 
-        // Assert
         assertEquals("redirect:/products/edit/1", redirect);
         verify(productService, never()).updateProduct(anyLong(), any());
         verifyErrorMessage("Название продукта не может быть пустым");
@@ -272,17 +234,14 @@ class ProductControllerTest {
 
     @Test
     void updateProduct_ServiceThrowsException_ShouldRedirectWithErrorMessage() {
-        // Arrange
         when(productService.updateProduct(eq(1L), any(Product.class)))
                 .thenThrow(new RuntimeException("Update error"));
 
-        // Act
         String redirect = productController.updateProduct(
                 1L, 1L, 1L, "Product", new BigDecimal("150.00"),
                 "Description", "pic.jpg", redirectAttributes
         );
 
-        // Assert
         assertEquals("redirect:/products/edit/1", redirect);
         verify(productService).updateProduct(eq(1L), any(Product.class));
         verifyErrorMessage("Ошибка при обновлении продукта: Update error");
@@ -290,13 +249,10 @@ class ProductControllerTest {
 
     @Test
     void deleteProduct_Success_ShouldRedirectWithSuccessMessage() {
-        // Arrange
         doNothing().when(productService).deleteProduct(1L);
 
-        // Act
         String redirect = productController.deleteProduct(1L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).deleteProduct(1L);
         verifySuccessMessage("Продукт успешно удален!");
@@ -304,14 +260,11 @@ class ProductControllerTest {
 
     @Test
     void deleteProduct_DataIntegrityViolation_ShouldRedirectWithSpecificMessage() {
-        // Arrange
         doThrow(new DataIntegrityViolationException("Constraint violation"))
                 .when(productService).deleteProduct(1L);
 
-        // Act
         String redirect = productController.deleteProduct(1L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).deleteProduct(1L);
         verify(redirectAttributes).addFlashAttribute(
@@ -323,14 +276,11 @@ class ProductControllerTest {
 
     @Test
     void deleteProduct_GeneralException_ShouldRedirectWithErrorMessage() {
-        // Arrange
         doThrow(new RuntimeException("General error"))
                 .when(productService).deleteProduct(1L);
 
-        // Act
         String redirect = productController.deleteProduct(1L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/products", redirect);
         verify(productService).deleteProduct(1L);
         verifyErrorMessage("Ошибка при удалении продукта: General error");
@@ -338,14 +288,11 @@ class ProductControllerTest {
 
     @Test
     void getProductsByCategory_ShouldReturnViewWithFilteredProducts() {
-        // Arrange
         when(productService.getProductsByCategory(1L)).thenReturn(productList);
         setupCommonMocks();
 
-        // Act
         String viewName = productController.getProductsByCategory(1L, model);
 
-        // Assert
         assertEquals("mainProduct", viewName);
         verify(productService).getProductsByCategory(1L);
         verify(categoryService).getAllCategories();
@@ -355,22 +302,17 @@ class ProductControllerTest {
 
     @Test
     void getProductsByMythology_ShouldReturnViewWithFilteredProducts() {
-        // Arrange
         when(productService.getProductsByMythology(1L)).thenReturn(productList);
         setupCommonMocks();
 
-        // Act
         String viewName = productController.getProductsByMythology(1L, model);
 
-        // Assert
         assertEquals("mainProduct", viewName);
         verify(productService).getProductsByMythology(1L);
         verify(categoryService).getAllCategories();
         verify(mythologyService).getAllMythologies();
         verify(model).addAttribute("productList", productList);
     }
-
-    // Вспомогательные методы для уменьшения дублирования
 
     private String createProductWithInvalidName(String name) {
         return productController.createProduct(
