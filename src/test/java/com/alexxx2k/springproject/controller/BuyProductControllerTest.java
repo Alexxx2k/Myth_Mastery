@@ -74,16 +74,13 @@ class BuyProductControllerTest {
 
     @Test
     void getAllBuyProducts_WithServiceException_ShouldHandleError() {
-        // Arrange
         when(buyProductService.getAllBuyProducts())
                 .thenThrow(new RuntimeException("Database error"));
         when(model.addAttribute("message", "Ошибка: Database error")).thenReturn(model);
         when(model.addAttribute("messageType", "error")).thenReturn(model);
 
-        // Act
         String viewName = buyProductController.getAllBuyProducts(model);
 
-        // Assert
         assertEquals("mainBuyProduct", viewName);
         verify(model, times(1)).addAttribute("message", "Ошибка: Database error");
         verify(model, times(1)).addAttribute("messageType", "error");
@@ -92,16 +89,13 @@ class BuyProductControllerTest {
 
     @Test
     void getBuyProductsByBuy_WithException_ShouldHandleError() {
-        // Arrange
         when(buyProductService.getBuyProductsByBuyId(1L))
                 .thenThrow(new RuntimeException("Error"));
         when(model.addAttribute("message", "Ошибка: Error")).thenReturn(model);
         when(model.addAttribute("messageType", "error")).thenReturn(model);
 
-        // Act
         String viewName = buyProductController.getBuyProductsByBuy(1L, model);
 
-        // Assert
         assertEquals("buyProductByBuy", viewName);
         verify(model, times(1)).addAttribute("message", "Ошибка: Error");
         verify(model, times(1)).addAttribute("messageType", "error");
@@ -109,7 +103,6 @@ class BuyProductControllerTest {
 
     @Test
     void showAddProductForm_ShouldReturnAddProductPage() {
-        // Arrange
         List<Product> products = Arrays.asList(productDto);
 
         when(buyService.getBuyById(1L)).thenReturn(Optional.of(buyDto));
@@ -119,10 +112,8 @@ class BuyProductControllerTest {
         when(model.addAttribute("buy", buyDto)).thenReturn(model);
         when(model.addAttribute("products", products)).thenReturn(model);
 
-        // Act
         String viewName = buyProductController.showAddProductForm(1L, model);
 
-        // Assert
         assertEquals("addProductToBuy", viewName);
         verify(buyService, times(1)).getBuyById(1L);
         verify(productService, times(1)).getAllProducts();
@@ -131,7 +122,6 @@ class BuyProductControllerTest {
 
     @Test
     void addProductToBuy_WithValidData_ShouldAddProduct() {
-        // Arrange
         when(buyProductService.addProductToBuy(1L, 1L, 2))
                 .thenReturn(buyProductDto);
         when(redirectAttributes.addFlashAttribute("message", "✅ Товар добавлен в заказ!"))
@@ -139,10 +129,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "success"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.addProductToBuy(1L, 1L, 2, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/by-buy/1", viewName);
         verify(buyProductService, times(1)).addProductToBuy(1L, 1L, 2);
         verify(redirectAttributes, times(1))
@@ -154,7 +142,6 @@ class BuyProductControllerTest {
 
     @Test
     void addProductToBuy_WithException_ShouldShowError() {
-        // Arrange
         when(buyProductService.addProductToBuy(1L, 1L, 2))
                 .thenThrow(new IllegalArgumentException("Товар не найден"));
         when(redirectAttributes.addFlashAttribute("message", "❌ Ошибка: Товар не найден"))
@@ -162,10 +149,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "error"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.addProductToBuy(1L, 1L, 2, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/add/1", viewName);
         verify(redirectAttributes, times(1))
                 .addFlashAttribute("message", "❌ Ошибка: Товар не найден");
@@ -175,15 +160,12 @@ class BuyProductControllerTest {
 
     @Test
     void showEditForm_WithExistingId_ShouldReturnEditPage() {
-        // Arrange
         when(buyProductService.getBuyProductById(1L))
                 .thenReturn(Optional.of(buyProductDto));
         when(model.addAttribute("buyProduct", buyProductDto)).thenReturn(model);
 
-        // Act
         String viewName = buyProductController.showEditForm(1L, model);
 
-        // Assert
         assertEquals("editBuyProduct", viewName);
         verify(buyProductService, times(1)).getBuyProductById(1L);
         verify(model, times(1)).addAttribute("buyProduct", buyProductDto);
@@ -191,17 +173,14 @@ class BuyProductControllerTest {
 
     @Test
     void showEditForm_WithNonExistingId_ShouldRedirect() {
-        // Arrange
         when(buyProductService.getBuyProductById(999L))
                 .thenThrow(new IllegalArgumentException("Позиция не найдена"));
         when(model.addAttribute("message", "❌ Ошибка: Позиция не найдена"))
                 .thenReturn(model);
         when(model.addAttribute("messageType", "error")).thenReturn(model);
 
-        // Act
         String viewName = buyProductController.showEditForm(999L, model);
 
-        // Assert
         assertEquals("redirect:/buy-products", viewName);
         verify(model, times(1))
                 .addAttribute("message", "❌ Ошибка: Позиция не найдена");
@@ -210,7 +189,6 @@ class BuyProductControllerTest {
 
     @Test
     void updateProductAmount_WithValidAmount_ShouldUpdate() {
-        // Arrange
         when(buyProductService.updateProductAmount(1L, 5))
                 .thenReturn(buyProductDto);
         when(redirectAttributes.addFlashAttribute("message", "✅ Количество обновлено!"))
@@ -218,10 +196,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "success"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.updateProductAmount(1L, 5, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/by-buy/1", viewName);
         verify(buyProductService, times(1)).updateProductAmount(1L, 5);
         verify(redirectAttributes, times(1))
@@ -232,7 +208,6 @@ class BuyProductControllerTest {
 
     @Test
     void updateProductAmount_WithException_ShouldShowError() {
-        // Arrange
         when(buyProductService.updateProductAmount(1L, 0))
                 .thenThrow(new IllegalArgumentException("Количество должно быть больше 0"));
         when(redirectAttributes.addFlashAttribute("message", "❌ Ошибка: Количество должно быть больше 0"))
@@ -240,10 +215,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "error"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.updateProductAmount(1L, 0, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/edit/1", viewName);
         verify(redirectAttributes, times(1))
                 .addFlashAttribute("message", "❌ Ошибка: Количество должно быть больше 0");
@@ -253,7 +226,6 @@ class BuyProductControllerTest {
 
     @Test
     void deleteBuyProduct_WithExistingId_ShouldDelete() {
-        // Arrange
         when(buyProductService.getBuyProductById(1L))
                 .thenReturn(Optional.of(buyProductDto));
         doNothing().when(buyProductService).removeProductFromBuy(1L);
@@ -262,10 +234,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "success"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.deleteBuyProduct(1L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/by-buy/1", viewName);
         verify(buyProductService, times(1)).getBuyProductById(1L);
         verify(buyProductService, times(1)).removeProductFromBuy(1L);
@@ -277,7 +247,6 @@ class BuyProductControllerTest {
 
     @Test
     void deleteBuyProduct_WithDataIntegrityViolation_ShouldShowSpecificError() {
-        // Arrange
         when(buyProductService.getBuyProductById(1L))
                 .thenReturn(Optional.of(buyProductDto));
         doThrow(new DataIntegrityViolationException("foreign key constraint"))
@@ -287,10 +256,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "error"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.deleteBuyProduct(1L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products", viewName);
         verify(redirectAttributes, times(1))
                 .addFlashAttribute("message", "❌ Нельзя удалить: существуют связанные объекты");
@@ -300,7 +267,6 @@ class BuyProductControllerTest {
 
     @Test
     void deleteBuyProduct_WithNonExistingId_ShouldShowError() {
-        // Arrange
         when(buyProductService.getBuyProductById(999L))
                 .thenThrow(new IllegalArgumentException("Позиция не найдена"));
         when(redirectAttributes.addFlashAttribute("message", "❌ Ошибка: Позиция не найдена"))
@@ -308,10 +274,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "error"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.deleteBuyProduct(999L, redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products", viewName);
         verify(redirectAttributes, times(1))
                 .addFlashAttribute("message", "❌ Ошибка: Позиция не найдена");
@@ -321,19 +285,15 @@ class BuyProductControllerTest {
 
     @Test
     void parseProductIds_WithEmptyString_ShouldReturnEmptyList() {
-        // Act
         var result = buyProductController.parseProductIds(null);
 
-        // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void parseProductIds_WithSingleProduct_ShouldParseCorrectly() {
-        // Act
         var result = buyProductController.parseProductIds("1");
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).productId());
         assertEquals(1, result.get(0).amount());
@@ -341,10 +301,8 @@ class BuyProductControllerTest {
 
     @Test
     void parseProductIds_WithProductAndAmount_ShouldParseCorrectly() {
-        // Act
         var result = buyProductController.parseProductIds("1:2");
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).productId());
         assertEquals(2, result.get(0).amount());
@@ -352,10 +310,8 @@ class BuyProductControllerTest {
 
     @Test
     void parseProductIds_WithMultipleProducts_ShouldParseCorrectly() {
-        // Act
         var result = buyProductController.parseProductIds("1:2, 3:1, 5");
 
-        // Assert
         assertEquals(3, result.size());
 
         assertEquals(1L, result.get(0).productId());
@@ -370,10 +326,8 @@ class BuyProductControllerTest {
 
     @Test
     void parseProductIds_WithInvalidFormat_ShouldSkipInvalidEntries() {
-        // Act
         var result = buyProductController.parseProductIds("1:2, invalid, 3:abc, 4:5");
 
-        // Assert
         assertEquals(2, result.size());
         assertEquals(1L, result.get(0).productId());
         assertEquals(2, result.get(0).amount());
@@ -383,10 +337,8 @@ class BuyProductControllerTest {
 
     @Test
     void parseProductIds_WithExtraSpaces_ShouldTrimCorrectly() {
-        // Act
         var result = buyProductController.parseProductIds(" 1 : 2 ,  3 : 1 ");
 
-        // Assert
         assertEquals(2, result.size());
         assertEquals(1L, result.get(0).productId());
         assertEquals(2, result.get(0).amount());
@@ -396,7 +348,6 @@ class BuyProductControllerTest {
 
     @Test
     void createBuyWithProducts_WithValidData_ShouldCreateBuy() {
-        // Arrange
         Buy newBuy = new Buy(1L, 1L, 1L, "Test Order");
         when(buyService.createBuy(1L, "Test Order", 1L)).thenReturn(newBuy);
         when(redirectAttributes.addFlashAttribute("message", "✅ Заказ #1 успешно создан!"))
@@ -404,10 +355,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "success"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.createBuyWithProducts(1L, "Test Order", redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/by-buy/1", viewName);
         verify(buyService, times(1)).createBuy(1L, "Test Order", 1L);
         verify(redirectAttributes, times(1))
@@ -418,7 +367,6 @@ class BuyProductControllerTest {
 
     @Test
     void createBuyWithProducts_WithException_ShouldShowError() {
-        // Arrange
         when(buyService.createBuy(1L, "Test Order", 1L))
                 .thenThrow(new RuntimeException("Ошибка создания"));
         when(redirectAttributes.addFlashAttribute("message", "❌ Ошибка создания заказа: Ошибка создания"))
@@ -426,10 +374,8 @@ class BuyProductControllerTest {
         when(redirectAttributes.addFlashAttribute("messageType", "error"))
                 .thenReturn(redirectAttributes);
 
-        // Act
         String viewName = buyProductController.createBuyWithProducts(1L, "Test Order", redirectAttributes);
 
-        // Assert
         assertEquals("redirect:/buy-products/new", viewName);
         verify(redirectAttributes, times(1))
                 .addFlashAttribute("message", "❌ Ошибка создания заказа: Ошибка создания");
