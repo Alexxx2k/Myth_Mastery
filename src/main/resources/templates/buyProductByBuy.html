@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Товары в заказе - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="back-link" style="margin-left: 10px;">← На главную</a>
+    <a th:href="@{/buys/my-orders}" class="back-link" style="margin-left: 10px;">← Мои заказы</a>
+
+    <h1>Товары в заказе #<span th:text="${buyId}"></span></h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div th:if="${buy}" class="order-info">
+        <p>Клиент ID: <strong th:text="${buy.customerId}"></strong></p>
+        <p th:if="${buy.description}">Описание: <span th:text="${buy.description}"></span></p>
+        <div class="menu" style="margin: 15px 0;">
+            <a th:href="@{'/buy-products/add/' + ${buyId}}" class="btn-add">+ Добавить товар</a>
+        </div>
+    </div>
+
+    <div th:if="${totalPrice != null}" class="total-price">
+        <strong>Общая сумма заказа: <span th:text="${#numbers.formatDecimal(totalPrice, 1, 2)}"></span> руб.</strong>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Товар</th>
+            <th>Категория</th>
+            <th>Мифология</th>
+            <th>Цена (руб.)</th>
+            <th>Кол-во</th>
+            <th>Сумма (руб.)</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(buyProductList)}">
+            <td colspan="8" class="no-data">Нет товаров в этом заказе</td>
+        </tr>
+        <tr th:each="bp : ${buyProductList}">
+            <td th:text="${bp.id}"></td>
+            <td>
+                <strong th:text="${bp.productName}"></strong>
+                <div class="small-text">ID: <span th:text="${bp.productId}"></span></div>
+            </td>
+            <td th:text="${bp.productCategoryName} ?: '-'"></td>
+            <td th:text="${bp.productMythologyName} ?: '-'"></td>
+            <td th:text="${#numbers.formatDecimal(bp.productPrice, 1, 2)}"></td>
+            <td th:text="${bp.amount}"></td>
+            <td th:text="${#numbers.formatDecimal(bp.totalPrice, 1, 2)}"></td>
+            <td class="actions">
+                <a th:href="@{/buy-products/edit/{id}(id=${bp.id})}" class="btn-edit">Изменить</a>
+                <form th:action="@{/buy-products/delete/{id}(id=${bp.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-delete"
+                            onclick="return confirm('Удалить товар из заказа?')">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
