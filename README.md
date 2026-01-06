@@ -46,11 +46,15 @@ ___
 Логи, бэкапы, медиа: ~1 ТБ.
 
 ### Диаграммы C4 Model
-*Не реализовано*
+#### System context diagram
+![sys_context](src/main/resources/images/sys_context.png)
+
+#### Container diagram
+![cont_view](src/main/resources/images/cont_view.png)
 
 ### Контракты API
-*Не реализовано*
-
+Информация об API представлена в соответствующих файлах:
+[OSRMApi](src/main/resources/OSRMApi.md), [2GISApi](src/main/resources/2GISGeocoderApi.md)
 ### Схема БД
 ___
 ![MMDB](src/main/resources/images/MMDB.png)
