@@ -47,14 +47,14 @@ ___
 
 ### Диаграммы C4 Model
 #### System context diagram
-![MMDB](src/main/resources/images/sys_context.png)
+![sys_context](src/main/resources/images/sys_context.png)
 
 #### Container diagram
-![MMDB](src/main/resources/images/cont_view.png)
+![cont_view](src/main/resources/images/cont_view.png)
 
 ### Контракты API
-*Не реализовано*
-
+Информация об API представлена в соответствующих файлах:
+[OSRMApi](src/main/resources/OSRMApi.md), [2GISApi](src/main/resources/2GISGeocoderApi.md)
 ### Схема БД
 ___
 ![MMDB](src/main/resources/images/MMDB.png)
