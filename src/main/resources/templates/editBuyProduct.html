@@ -7,7 +7,6 @@
 </head>
 <body>
 <div class="container">
-    <!-- ДВЕ ССЫЛКИ В ЗАВИСИМОСТИ ОТ РОЛИ -->
     <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
        class="btn btn-secondary"
        sec:authorize="!hasRole('ADMIN')">← Назад к заказу</a>
@@ -40,8 +39,6 @@
 
         <div class="button-group">
             <button type="submit" class="btn btn-primary">Сохранить</button>
-
-            <!-- ДВЕ КНОПКИ ОТМЕНЫ -->
             <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
                class="btn btn-secondary"
                sec:authorize="!hasRole('ADMIN')">Отмена</a>

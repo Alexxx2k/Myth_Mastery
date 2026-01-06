@@ -30,7 +30,6 @@ public class BuyProductEntity {
         this.amount = amount != null ? amount : 1;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
