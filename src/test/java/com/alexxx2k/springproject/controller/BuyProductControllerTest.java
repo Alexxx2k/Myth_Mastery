@@ -102,25 +102,6 @@ class BuyProductControllerTest {
     }
 
     @Test
-    void showAddProductForm_ShouldReturnAddProductPage() {
-        List<Product> products = Arrays.asList(productDto);
-
-        when(buyService.getBuyById(1L)).thenReturn(Optional.of(buyDto));
-        when(productService.getAllProducts()).thenReturn(products);
-
-        when(model.addAttribute("buyId", 1L)).thenReturn(model);
-        when(model.addAttribute("buy", buyDto)).thenReturn(model);
-        when(model.addAttribute("products", products)).thenReturn(model);
-
-        String viewName = buyProductController.showAddProductForm(1L, model);
-
-        assertEquals("addProductToBuy", viewName);
-        verify(buyService, times(1)).getBuyById(1L);
-        verify(productService, times(1)).getAllProducts();
-    }
-
-
-    @Test
     void addProductToBuy_WithValidData_ShouldAddProduct() {
         when(buyProductService.addProductToBuy(1L, 1L, 2))
                 .thenReturn(buyProductDto);

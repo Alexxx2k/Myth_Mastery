@@ -91,7 +91,7 @@ ___
 ## Кодирование и отладка
 ___
 ### Технологический стек
-- **Backend**: Java, Spring Boot, Spring Web, Spring Security, Maven
+- **Backend**: Java 17, Spring Boot, Spring Web, Spring Security, Maven
 - **База данных**: PostgreSQL
 - **Frontend**: Thymeleaf
 - **Дополнительно**: Docker
@@ -117,7 +117,6 @@ ___
 - Выполнить в терминале:
 ```bash
 docker-compose up -d
-./mvnw.cmd clean package
 ./mvnw.cmd spring-boot:run
 ```
 - После этого встанет сервер бекенда на localhost:8080.
