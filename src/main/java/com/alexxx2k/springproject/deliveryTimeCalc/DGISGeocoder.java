@@ -16,7 +16,10 @@ public class DGISGeocoder {
         Locale.setDefault(Locale.US);
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String url = "https://catalog.api.2gis.com/3.0/items/geocode?q="
-                + encodedAddress + "&fields=items.point&key=" + apiKey;
+                + encodedAddress
+                + "&fields=items.point,items.type,items.full_name"
+                + "&type=adm_div.city"
+                + "&key=" + apiKey;
 
         String response = sendHttpGetRequest(url);
         JSONObject json = new JSONObject(response);
