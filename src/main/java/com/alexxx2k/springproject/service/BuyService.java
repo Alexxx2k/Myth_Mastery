@@ -29,8 +29,6 @@ public class BuyService {
         this.stepService = stepService;
     }
 
-    // ========== СУЩЕСТВУЮЩИЕ МЕТОДЫ ==========
-
     public List<Buy> getAllBuys() {
         return buyRepository.findAll().stream()
                 .map(this::toDomainBuy)
@@ -83,33 +81,24 @@ public class BuyService {
         );
     }
 
-    // ========== НОВЫЕ МЕТОДЫ ДЛЯ РАБОТЫ СО СТАТУСАМИ ==========
-
-    /**
-     * Получить название шага по buyStepId
-     */
     public String getStepNameByBuyStepId(Long buyStepId) {
         if (buyStepId == null) {
             return "Новый";
         }
 
         try {
-            // 1. Найти BuyStep по ID
             Optional<BuyStep> buyStepOpt = buyStepService.getBuyStepById(buyStepId);
             if (buyStepOpt.isEmpty()) {
                 return "Неизвестный шаг #" + buyStepId;
             }
 
-            // 2. Из BuyStep получить stepId
             Long stepId = buyStepOpt.get().stepId();
 
-            // 3. Найти Step по stepId и получить название
             Optional<Step> stepOpt = stepService.getStepById(stepId);
             if (stepOpt.isEmpty()) {
                 return "Шаг #" + stepId;
             }
 
-            // 4. Вернуть название шага
             return stepOpt.get().name();
 
         } catch (Exception e) {
@@ -117,24 +106,16 @@ public class BuyService {
         }
     }
 
-    /**
-     * Получить или создать BuyStep для выбранного Step
-     * @param stepId ID шага из таблицы step
-     * @return buyStepId для использования в заказе
-     */
     public Long getOrCreateBuyStepIdForStep(Long stepId) {
         if (stepId == null) {
             return null;
         }
 
-        // Ищем существующий BuyStep с этим stepId
         List<BuyStep> existingBuySteps = buyStepService.getBuyStepsByStepId(stepId);
 
         if (!existingBuySteps.isEmpty()) {
-            // Берем первый подходящий
             return existingBuySteps.get(0).id();
         } else {
-            // Создаем новый BuyStep
             BuyStep newBuyStep = buyStepService.createBuyStep(
                     new BuyStep(null, stepId, null, null)
             );

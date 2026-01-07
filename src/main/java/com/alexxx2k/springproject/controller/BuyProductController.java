@@ -114,13 +114,11 @@ public class BuyProductController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String showAddProductForm(@PathVariable Long buyId, Model model) {
         try {
-            // Проверяем статус заказа
             Buy buy = buyService.getBuyById(buyId)
                     .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
 
             String status = buyService.getStepNameByBuyStepId(buy.buyStepId());
 
-            // Если заказ оплачен или завершен - блокируем редактирование
             if (status.contains("Оплачен") || status.contains("Завершен")) {
                 model.addAttribute("message", "❌ Этот заказ оплачен, редактирование невозможно");
                 model.addAttribute("messageType", "error");

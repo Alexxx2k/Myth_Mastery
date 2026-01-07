@@ -14,7 +14,6 @@
        th:text="${message}">
   </div>
 
-  <!-- ИЗМЕНИТЬ форму: добавить selectedStepId вместо buyStepId -->
   <form method="post" th:action="@{/buys/update/{id}(id=${buy.id})}">
     <div class="form-group">
       <label for="customerId">ID клиента *</label>
@@ -22,11 +21,9 @@
              th:value="${buy.customerId}" min="1" required>
     </div>
 
-    <!-- ========== НОВЫЙ БЛОК ДЛЯ СТАТУСА ========== -->
     <div class="form-group">
       <label>Статус заказа</label>
 
-      <!-- Текущий статус (только для информации) -->
       <div style="background: #2d2d2d; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #4a90e2;">
         <strong>Текущий статус:</strong>
         <span style="color: #4a90e2; font-weight: bold;"
@@ -38,12 +35,10 @@
         </small>
       </div>
 
-      <!-- Выпадающий список для выбора нового статуса -->
       <label for="selectedStepId">Изменить статус на:</label>
       <select id="selectedStepId" name="selectedStepId" class="form-control">
         <option value="">-- Не изменять статус --</option>
 
-        <!-- Все доступные шаги из таблицы step -->
         <option th:each="step : ${allSteps}"
                 th:value="${step.id}"
                 th:text="${step.name} + ' (' + ${step.description} + ')'">

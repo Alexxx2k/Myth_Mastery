@@ -27,10 +27,10 @@ public class BuyController {
 
     public BuyController(BuyService buyService,
                          CustomerService customerService,
-                         StepService stepService) {  // ← ДОБАВИТЬ параметр
+                         StepService stepService) {
         this.buyService = buyService;
         this.customerService = customerService;
-        this.stepService = stepService;     // ← ДОБАВИТЬ
+        this.stepService = stepService;
     }
 
     @GetMapping
@@ -39,7 +39,6 @@ public class BuyController {
         List<Buy> buys = buyService.getAllBuys();
         model.addAttribute("buyList", buys);
 
-        // Для каждого заказа получить название статуса
         List<BuyStatusInfo> buyStatusList = new ArrayList<>();
         for (Buy buy : buys) {
             String statusName = buyService.getStepNameByBuyStepId(buy.buyStepId());
@@ -75,7 +74,6 @@ public class BuyController {
         return showCreateBuyForm(model);
     }
 
-    // ========== ИЗМЕНИТЬ метод showEditBuyForm ==========
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String showEditBuyForm(@PathVariable Long id, Model model) {
@@ -84,11 +82,9 @@ public class BuyController {
                     .orElseThrow(() -> new IllegalArgumentException("Заказ с ID " + id + " не найден"));
             model.addAttribute("buy", buy);
 
-            // 1. Получить текущее название статуса
             String currentStatusName = buyService.getStepNameByBuyStepId(buy.buyStepId());
             model.addAttribute("currentStatusName", currentStatusName);
 
-            // 2. Получить все шаги для выпадающего списка
             var allSteps = stepService.getAllSteps();
             model.addAttribute("allSteps", allSteps);
 
@@ -100,20 +96,18 @@ public class BuyController {
         }
     }
 
-    // ========== ИЗМЕНИТЬ метод updateBuy ==========
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String updateBuy(
             @PathVariable Long id,
             @RequestParam Long customerId,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) Long selectedStepId,  // ← ИЗМЕНИТЬ тип и имя
+            @RequestParam(required = false) Long selectedStepId,
             Model model) {
         try {
             Long finalBuyStepId = null;
 
             if (selectedStepId != null) {
-                // Получить или создать buyStepId для выбранного stepId
                 finalBuyStepId = buyService.getOrCreateBuyStepIdForStep(selectedStepId);
             }
 
@@ -142,7 +136,6 @@ public class BuyController {
         return "redirect:/buys";
     }
 
-    // ========== ИЗМЕНИТЬ метод getMyOrders для пользователя ==========
     @GetMapping("/my-orders")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String getMyOrders(Model model) {
@@ -178,27 +171,22 @@ public class BuyController {
             @PathVariable Long id,
             RedirectAttributes redirectAttributes) {
         try {
-            // Получаем текущего пользователя
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String customerEmail = auth.getName();
             Long customerId = customerService.getCustomerIdByEmail(customerEmail);
 
-            // Получаем заказ
             Buy buy = buyService.getBuyById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
 
-            // Проверяем, что заказ принадлежит пользователю
             if (!buy.customerId().equals(customerId)) {
                 throw new IllegalArgumentException("Это не ваш заказ");
             }
 
-            // Проверяем, что заказ еще не оплачен
             String currentStatus = buyService.getStepNameByBuyStepId(buy.buyStepId());
             if (currentStatus.contains("Оплачен") || currentStatus.contains("Завершен")) {
                 throw new IllegalArgumentException("Заказ уже оплачен или завершен");
             }
 
-            // 1. Найти шаг "Оплачен" в таблице step
             Optional<Step> paidStepOpt = stepService.getAllSteps().stream()
                     .filter(step -> step.name().equals("Оплачен"))
                     .findFirst();
@@ -209,10 +197,8 @@ public class BuyController {
 
             Long stepId = paidStepOpt.get().id();
 
-            // 2. Найти или создать buyStep с этим stepId
             Long paidBuyStepId = buyService.getOrCreateBuyStepIdForStep(stepId);
 
-            // 3. Обновляем статус заказа
             buyService.updateBuy(id, buy.customerId(), buy.description(), paidBuyStepId);
 
             redirectAttributes.addFlashAttribute("message", "✅ Заказ успешно оплачен!");
@@ -226,6 +212,5 @@ public class BuyController {
         return "redirect:/buys/my-orders";
     }
 
-    // ========== ВСПОМОГАТЕЛЬНЫЙ КЛАСС (добавить в конце файла) ==========
     public record BuyStatusInfo(Buy buy, String statusName) {}
 }

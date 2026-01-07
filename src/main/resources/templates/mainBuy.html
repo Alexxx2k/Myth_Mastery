@@ -33,27 +33,22 @@
             <td colspan="5" class="no-data">Нет данных о заказах</td>
         </tr>
         <tr th:each="item : ${buyStatusList}">
-            <!-- ТУТ: item.buy.id вместо buy.id -->
             <td th:text="${item.buy.id}"></td>
             <td>
-                <!-- ТУТ: item.statusName вместо buy.buyStepId -->
                 <strong th:text="${item.statusName}"></strong>
                 <br>
                 <small style="color: #666; font-size: 0.8em;">
                     (ID шага: <span th:text="${item.buy.buyStepId} ?: 'не задан'"></span>)
                 </small>
             </td>
-            <!-- ТУТ: item.buy.customerId вместо buy.customerId -->
             <td th:text="${item.buy.customerId}"></td>
             <td>
-                <!-- ТУТ: item.buy.description вместо buy.description -->
                 <span th:if="${item.buy.description}"
                       th:text="${item.buy.description}"></span>
                 <span th:unless="${item.buy.description}"
                       class="no-data">-</span>
             </td>
             <td sec:authorize="hasRole('ADMIN')" class="actions">
-                <!-- ТУТ: item.buy.id вместо buy.id -->
                 <a th:href="@{/buys/edit/{id}(id=${item.buy.id})}"
                    class="btn-edit">Редактировать</a>
                 <form th:action="@{/buys/delete/{id}(id=${item.buy.id})}"

@@ -18,15 +18,12 @@
          th:text="${message}">
     </div>
 
-    <!-- ДОБАВИТЬ в начало или рядом с другими кнопками -->
     <div th:if="${buy != null}" class="payment-section">
 
-        <!-- Проверяем статус заказа -->
         <div th:if="${@buyService.getStepNameByBuyStepId(buy.buyStepId()) != null
                  and !@buyService.getStepNameByBuyStepId(buy.buyStepId()).contains('Оплачен')
                  and !@buyService.getStepNameByBuyStepId(buy.buyStepId()).contains('Завершен')}">
 
-            <!-- Кнопка оплаты -->
             <form th:action="@{/buys/pay/{id}(id=${buy.id})}" method="post"
                   onsubmit="return confirm('Вы уверены, что хотите оплатить этот заказ? После оплаты редактирование будет невозможно.');">
 
@@ -42,7 +39,6 @@
             </form>
         </div>
 
-        <!-- Если заказ уже оплачен -->
         <div th:if="${@buyService.getStepNameByBuyStepId(buy.buyStepId()) != null
                  and (@buyService.getStepNameByBuyStepId(buy.buyStepId()).contains('Оплачен')
                  or @buyService.getStepNameByBuyStepId(buy.buyStepId()).contains('Завершен'))}">
@@ -55,9 +51,6 @@
         </div>
     </div>
 
-
-    <!-- ========== КНОПКА "ДОБАВИТЬ ТОВАР" ========== -->
-    <!-- ПОКАЗЫВАТЬ ТОЛЬКО ЕСЛИ ЗАКАЗ НЕ ОПЛАЧЕН -->
     <div th:if="${buy != null
                  and @buyService.getStepNameByBuyStepId(buy.buyStepId()) != null
                  and !@buyService.getStepNameByBuyStepId(buy.buyStepId()).contains('Оплачен')
@@ -68,7 +61,6 @@
         </a>
     </div>
 
-    <!-- ========== ИНФОРМАЦИЯ О ЗАКАЗЕ ========== -->
     <div class="order-info" th:if="${buy != null}">
         <h3>Информация о заказе</h3>
         <p><strong>Описание:</strong>
