@@ -1,31 +1,13 @@
 #!/bin/bash
 set -e
 
-echo "Select configuration:"
-echo "1 - Main postgres container"
-echo "2 - Testing postgres container"
-read -p "Enter your choice (1 or 2): " choice
+CONTAINER_NAME="postgres_container"
+DB_USER="postgres"
+DB_NAME="postgres"
+PG_VOLUME="myth_mastery_pg_data"
 
-case $choice in
-    1)
-        CONTAINER_NAME="postgres_container"
-        DB_USER="postgres"
-        DB_NAME="postgres"
-        PG_VOLUME="opd_springspree_pg_data"
-        ;;
-    2)
-        CONTAINER_NAME="postgres_testing_container"
-        DB_USER="postgresTest"
-        DB_NAME="postgresTest"
-        PG_VOLUME="opd_springspree_pg_data2"
-        ;;
-    *)
-        echo "Invalid choice! Please select 1 or 2."
-        exit 1
-        ;;
-esac
-
-BACKUP_BEFORE_RESET="../src/main/resources/sql/backup/backup_before_reset.sql"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_BEFORE_RESET="${SCRIPT_DIR}/../src/main/resources/sql/backup/backup_before_reset.sql"
 
 echo "Using configuration:"
 echo "Container: $CONTAINER_NAME"

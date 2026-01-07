@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавить мифологию - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/mythologies}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Добавить мифологию</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <form method="post" th:action="@{/mythologies}">
+        <div class="form-group">
+            <label for="name">Название мифологии *</label>
+            <input type="text" id="name" name="name" required
+                   placeholder="Например: Греческая, Скандинавская, Египетская">
+        </div>
+
+        <div>
+            <button type="submit" class="btn">Добавить мифологию</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

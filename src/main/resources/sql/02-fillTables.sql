@@ -1,42 +1,33 @@
 INSERT INTO mythology (name) VALUES
-('Greek'),
-('Norse'),
-('Egyptian');
+('Греческая'),
+('Норвежская'),
+('Египетская');
 
 INSERT INTO category (name, hazard, rarity) VALUES
-('Potion', 'Low', 'Common'),
-('Weapon', 'High', 'Rare'),
-('Artifact', 'Medium', 'Uncommon');
+('Зелье', 'Безопасно', 'Common'),
+('Оружие', 'Опасно', 'Rare'),
+('Артефакт', 'С осторожностью', 'Uncommon');
 
 INSERT INTO city (name, delivery_time) VALUES
-('New York', 2353263),
-('London', 30000),
-('Tokyo', 234553);
+('Воронеж', 23),
+('Казань', 30),
+('Челябинск', 23);
 
 INSERT INTO step (name, description) VALUES
-('Buy Placed', 'Customer submitted the buy'),
-('Payment Received', 'Payment has been confirmed'),
-('Sent', 'Gargoyle has been sent'),
-('Delivered', 'Buy has been delivered');
+('Сформирован', 'Клиент сформировал заказ'),
+('Оплачен', 'Клиент оплатил заказ'),
+('Отправлен', 'Горгулья несет заказ'),
+('Доставлен', 'Заказ доставлен');
 
-INSERT INTO customer (city_id, name, email) VALUES
-((SELECT id FROM city WHERE name = 'New York'), 'John Doe', 'john.doe@example.com'),
-((SELECT id FROM city WHERE name = 'London'), 'Jane Smith', 'jane.smith@example.com'),
-((SELECT id FROM city WHERE name = 'Tokyo'), 'Taro Tanaka', 'taro.tanaka@example.jp');
+INSERT INTO customer (city_id, name, email, password_hash) VALUES
+((SELECT id FROM city WHERE name = 'Воронеж'), 'Test Oleg', 'OLEG@gmail.com', '$2a$10$zoYqOM8e44PYtJSdbYg7DeULcbmqEnDvIr448O1gLF5YQJ6DIkK3q');
 
 INSERT INTO buy_step (step_id, date_start, date_end) VALUES
-((SELECT id FROM step WHERE name = 'Buy Placed'), '2023-10-26', '2023-10-26'),
-((SELECT id FROM step WHERE name = 'Payment Received'), '2023-10-26', '2023-10-26'),
-((SELECT id FROM step WHERE name = 'Sent'), '2023-10-27', '2024-01-02');
+((SELECT id FROM step WHERE name = 'Сформирован'), '2023-10-26', '2023-10-26'),
+((SELECT id FROM step WHERE name = 'Оплачен'), '2023-10-26', '2023-10-26'),
+((SELECT id FROM step WHERE name = 'Отправлен'), '2023-10-27', '2024-01-02');
 
 INSERT INTO product (category_id, mythology_id, name, price, description, pic) VALUES
-((SELECT id FROM category WHERE name = 'Potion'), (SELECT id FROM mythology WHERE name = 'Greek'), 'Healing Potion', 10.00, 'Restores 50 HP', 'healing_potion.jpg'),
-((SELECT id FROM category WHERE name = 'Weapon'), (SELECT id FROM mythology WHERE name = 'Norse'), 'Thor Hammer', 1000.00, 'Legendary hammer', 'thors_hammer.jpg'),
-((SELECT id FROM category WHERE name = 'Artifact'), (SELECT id FROM mythology WHERE name = 'Egyptian'), 'Amulet of Anubis', 500.00, 'Protects from evil', 'anubis_amulet.jpg');
-
-INSERT INTO buy (buy_step_id, customer_id, description) VALUES
-((SELECT id FROM buy_step WHERE step_id = (SELECT id FROM step WHERE name = 'Buy Placed') AND date_start = '2023-10-26'), (SELECT id FROM customer WHERE name = 'John Doe'), 'Online Buy');
-
-INSERT INTO buy_product (product_id, buy_id, amount) VALUES
-((SELECT id FROM product WHERE name = 'Healing Potion'), (SELECT id FROM buy WHERE description = 'Online Buy'), 2),
-((SELECT id FROM product WHERE name = 'Thor Hammer'), (SELECT id FROM buy WHERE description = 'Online Buy'), 1);
+((SELECT id FROM category WHERE name = 'Зелье'), (SELECT id FROM mythology WHERE name = 'Греческая'), 'Лечебное зелье', 10.00, 'Залечивает небольшие раны', 'https://i.pinimg.com/1200x/d9/f5/2c/d9f52c759fc1ae8945620f6ad04cff4f.jpg'),
+((SELECT id FROM category WHERE name = 'Оружие'), (SELECT id FROM mythology WHERE name = 'Норвежская'), 'Молот Тора', 1000.00, 'Легендарный молот', 'https://i.pinimg.com/736x/e0/30/ad/e030ad2d7b6760baf4cec49e52344d7c.jpg'),
+((SELECT id FROM category WHERE name = 'Артефакт'), (SELECT id FROM mythology WHERE name = 'Египетская'), 'Амулет Анубиса', 500.00, 'Защищает от зла', 'https://i.pinimg.com/736x/74/0c/76/740c76e37e4234de064863b414520c34.jpg');

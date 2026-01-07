@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Главная</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+<div class="container">
+    <div class="user-info">
+        <div class="user-details">
+            Вы вошли как: <strong sec:authentication="name"></strong>
+        </div>
+        <a href="#" th:href="@{/logout}" class="logout-btn">Выйти</a>
+    </div>
+
+    <h1>MythMastery</h1>
+    <p style="text-align: center;">Онлайн-Магазин атрибутики различных мифологий</p>
+
+    <div class="menu">
+        <div sec:authorize="hasAnyRole('ADMIN')">
+            <a th:href="@{/products}">Продукты</a>
+            <a th:href="@{/mythologies}">Мифологии</a>
+            <a th:href="@{/cities}">Города</a>
+            <a th:href="@{/categories}">Категории</a>
+            <a th:href="@{/steps}">Шаги</a>
+            <a th:href="@{/buy-steps}">Шаги покупки</a>
+        </div>
+
+        <div sec:authorize="hasAnyRole('USER')">
+            <a th:href="@{/products}">Продукты</a>
+            <a th:href="@{/mythologies}">Мифологии</a>
+            <a th:href="@{/cities}">Города</a>
+        </div>
+
+        <div sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/customers}">Управление клиентами</a>
+            <a th:href="@{/buy-products}">Продажи</a>
+            <a th:href="@{/buys}">Заказы</a>
+        </div>
+        <div sec:authorize="hasRole('USER')">
+            <a th:href="@{/buy-products/new}">Новый заказ</a>
+            <a th:href="@{/buys/my-orders}">Мои заказы</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

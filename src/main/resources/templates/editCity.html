@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Редактировать город - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+    <style>
+        .note {
+            font-size: 0.9em;
+            color: #b0b0b0;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .current-time {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/cities}" class="btn btn-secondary">← Назад к списку</a>
+    <h1>Редактировать город</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div class="current-time">
+        <strong>Текущее время доставки:</strong>
+        <span th:text="${city.deliveryTime} + ' дней'"></span>
+        <div class="note">При редактировании укажите новое значение вручную</div>
+    </div>
+
+    <form method="post" th:action="@{/cities/update/{id}(id=${city.id})}">
+        <div class="form-group">
+            <label for="name">Название города *</label>
+            <input type="text" id="name" name="name"
+                   th:value="${city.name}" required
+                   placeholder="Например: Москва, Санкт-Петербург, Казань">
+        </div>
+
+        <div class="form-group">
+            <label for="deliveryTime">Время доставки (дни) *</label>
+            <input type="number" id="deliveryTime" name="deliveryTime"
+                   th:value="${city.deliveryTime}"
+                   min="1" max="365" required
+                   placeholder="Укажите время доставки в днях">
+            <div class="note">Введите время доставки в днях (от 1 до 365)</div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Сохранить изменения
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

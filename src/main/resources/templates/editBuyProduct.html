@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Изменить количество - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
+       class="btn btn-secondary"
+       sec:authorize="!hasRole('ADMIN')">← Назад к заказу</a>
+
+    <a th:href="@{/buy-products}"
+       class="btn btn-secondary"
+       sec:authorize="hasRole('ADMIN')">← Назад к списку</a>
+
+    <h1>Изменить количество товара</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div class="product-info">
+        <h3>Товар: <span th:text="${buyProduct.productName}"></span></h3>
+        <p>Заказ #<span th:text="${buyProduct.buyId}"></span></p>
+        <p>Текущее количество: <strong th:text="${buyProduct.amount}"></strong> шт.</p>
+        <p>Цена за шт.: <span th:text="${#numbers.formatDecimal(buyProduct.productPrice, 1, 2)}"></span> руб.</p>
+    </div>
+
+    <form method="post" th:action="@{/buy-products/update/{id}(id=${buyProduct.id})}">
+        <div class="form-group">
+            <label for="amount">Новое количество *</label>
+            <input type="number" id="amount" name="amount"
+                   th:value="${buyProduct.amount}"
+                   min="1" required>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a th:href="@{'/buy-products/by-buy/' + ${buyProduct.buyId}}"
+               class="btn btn-secondary"
+               sec:authorize="!hasRole('ADMIN')">Отмена</a>
+
+            <a th:href="@{/buy-products}"
+               class="btn btn-secondary"
+               sec:authorize="hasRole('ADMIN')">Отмена</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

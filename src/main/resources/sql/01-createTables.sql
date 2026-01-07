@@ -39,6 +39,7 @@ CREATE TABLE customer (
 	city_id INT NOT NULL,
 	name VARCHAR(50) NOT NULL,
     email VARCHAR(50),
+    password_hash VARCHAR(255) NOT NULL,
     FOREIGN KEY (city_id) REFERENCES city (id)
 );
 

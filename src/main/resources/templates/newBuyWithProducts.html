@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Новый заказ - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/createUpdatePages.css}">
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/}" class="back-link" style="margin-left: 10px;">← На главную</a>
+    <a th:href="@{/buys/my-orders}" class="back-link">← Мои заказы</a>
+    <h1>Создать новый заказ</h1>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'message success' : 'message error'"
+         th:text="${message}">
+    </div>
+
+    <div class="customer-info">
+        <p><strong>Клиент:</strong> <span th:text="${customerEmail}"></span></p>
+        <p><strong>ID клиента:</strong> <span th:text="${customerId}"></span></p>
+    </div>
+
+    <form method="post" th:action="@{/buy-products/create}">
+        <input type="hidden" name="customerId" th:value="${customerId}">
+
+        <div class="form-group">
+            <label for="description">Описание заказа (необязательно)</label>
+            <textarea id="description" name="description" rows="4"
+                      placeholder="Опишите детали вашего заказа..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Создать заказ</button>
+            <a th:href="@{/buys/my-orders}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

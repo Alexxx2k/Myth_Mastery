@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Мои заказы - MythMastery</title>
+    <link rel="stylesheet" th:href="@{/css/tablesPages.css}">
+    <link rel="stylesheet" th:href="@{/css/userOrders.css}">
+</head>
+<body>
+<div class="user-orders-container">
+    <a th:href="@{/}" class="user-back-link">← На главную</a>
+
+    <div class="user-info-bar">
+        <div class="user-info-text">
+            <h1 class="user-orders-title">Мои заказы</h1>
+            <div class="user-email">
+                Пользователь: <strong th:text="${customerEmail}"></strong>
+            </div>
+        </div>
+        <a th:href="@{/buy-products/new}" class="user-action-btn user-action-btn-success">➕ Новый заказ</a>
+    </div>
+
+    <div th:if="${message}"
+         th:class="${'success'.equals(messageType)} ? 'user-message user-success' : 'user-message user-error'"
+         th:text="${message}">
+    </div>
+
+    <div th:if="${#lists.isEmpty(buyList)}" class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <h3>У вас пока нет заказов</h3>
+        <p>Сделайте свой первый заказ и он появится здесь</p>
+        <a th:href="@{/buy-products/new}" class="user-action-btn user-action-btn-success" style="margin-top: 20px; padding: 12px 30px;">
+            Создать первый заказ
+        </a>
+    </div>
+
+    <div th:each="item : ${buyList}" class="order-card">
+        <div class="order-header">
+            <div>
+                <div class="order-id">Заказ #<span th:text="${item.buy.id}"></span></div>
+            </div>
+            <div>
+                <span class="order-status" th:class="${item.statusName}">
+                    <span th:text="${item.statusName}"></span>
+                </span>
+            </div>
+        </div>
+
+        <div th:if="${item.buy.description != null && !item.buy.description.isEmpty()}"
+             class="order-description">
+            <strong>Описание:</strong>
+            <span th:text="${item.buy.description}"></span>
+        </div>
+        <div th:unless="${item.buy.description != null && !item.buy.description.isEmpty()}"
+             class="order-description empty">
+            Нет дополнительных комментариев
+        </div>
+
+        <div class="order-actions">
+            <br>
+            <a th:href="@{'/buy-products/by-buy/' + ${item.buy.id}}" class="user-action-btn">
+                📋 Просмотреть товары в заказе
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(buyList)}" class="create-new-section">
+        <a th:href="@{/buy-products/new}" class="user-action-btn">Создать еще один заказ</a>
+    </div>
+</div>
+</body>
+</html>

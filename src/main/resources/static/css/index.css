@@ -1,0 +1,98 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0f0f0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    min-width: 1200px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 1px solid #333;
+}
+h1 {
+    color: #ffffff;
+    text-align: center;
+    font-weight: 300;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+.user-info {
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #4a90e2;
+}
+.logout-btn {
+    padding: 10px 20px;
+    background: #d32f2f;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+.logout-btn:hover {
+    background: #b71c1c;
+}
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+}
+.menu a {
+    display: block;
+    padding: 20px;
+    background: #2d2d2d;
+    color: #e0e0e0;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+    border: 1px solid #404040;
+}
+.menu a:hover {
+    background: #3d3d3d;
+    border-color: #4a90e2;
+    transform: translateY(-2px);
+}
+.admin-only {
+    background: #5d4037 !important;
+    border-color: #8d6e63 !important;
+}
+.admin-only:hover {
+    background: #6d534a !important;
+}
+.active-trips {
+    margin-top: 30px;
+    padding: 25px;
+    background: #2d2d2d;
+    border-radius: 8px;
+    border-left: 4px solid #ffa000;
+}
+.trip-item {
+    padding: 12px;
+    margin: 8px 0;
+    background: #3d3d3d;
+    border-left: 4px solid #ffa000;
+    border-radius: 4px;
+}
+.no-trips {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}
