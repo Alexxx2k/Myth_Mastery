@@ -102,29 +102,4 @@ public class ProductEntity {
         this.pic = pic;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductEntity that = (ProductEntity) o;
-        return id != null && id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "ProductEntity{" +
-                "id=" + id +
-                ", category=" + (category != null ? category.getId() : "null") +
-                ", mythology=" + (mythology != null ? mythology.getId() : "null") +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", description='" + description + '\'' +
-                ", pic='" + pic + '\'' +
-                '}';
-    }
 }
