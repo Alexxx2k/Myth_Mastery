@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,17 +20,10 @@ public class SecurityConfig {
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-
-        System.out.println("=== SECURITY CONFIG INIT ===");
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String testHash = encoder.encode("admin123");
-        System.out.println("Test hash for 'admin123': " + testHash);
-        System.out.println("Test verification: " + encoder.matches("admin123", testHash));
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        System.out.println("=== CREATING PasswordEncoder BEAN ===");
         return new BCryptPasswordEncoder();
     }
 
