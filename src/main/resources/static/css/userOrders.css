@@ -1,6 +1,5 @@
 /* Стили для страниц пользовательских заказов */
 
-/* Общие стили для обеих страниц */
 .user-orders-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -115,8 +114,6 @@
 .user-action-btn-success:hover {
     background: #276c2a;
 }
-
-/* ==================== СТИЛИ ДЛЯ newBuyWithProducts.html ==================== */
 
 /* Информационный блок */
 .info-box {
@@ -379,8 +376,6 @@
     margin-top: 30px;
     flex-wrap: wrap;
 }
-
-/* ==================== СТИЛИ ДЛЯ myOrders.html ==================== */
 
 /* Состояние пустого списка */
 .empty-state {

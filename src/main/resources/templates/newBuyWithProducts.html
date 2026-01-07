@@ -6,7 +6,8 @@
 </head>
 <body>
 <div class="container">
-    <a th:href="@{/buys/my-orders}" class="btn btn-secondary">← Мои заказы</a>
+    <a th:href="@{/}" class="back-link" style="margin-left: 10px;">← На главную</a>
+    <a th:href="@{/buys/my-orders}" class="back-link">← Мои заказы</a>
     <h1>Создать новый заказ</h1>
 
     <div th:if="${message}"

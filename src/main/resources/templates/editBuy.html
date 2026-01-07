@@ -22,9 +22,32 @@
     </div>
 
     <div class="form-group">
-      <label for="buyStepId">ID статуса</label>
-      <input type="number" id="buyStepId" name="buyStepId"
-             th:value="${buy.buyStepId}" min="1">
+      <label>Статус заказа</label>
+
+      <div style="background: #2d2d2d; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #4a90e2;">
+        <strong>Текущий статус:</strong>
+        <span style="color: #4a90e2; font-weight: bold;"
+              th:text="${currentStatusName}"></span>
+        <br>
+        <small style="color: #888;">
+          ID шага покупки:
+          <code th:text="${buy.buyStepId} ?: 'не задан'"></code>
+        </small>
+      </div>
+
+      <label for="selectedStepId">Изменить статус на:</label>
+      <select id="selectedStepId" name="selectedStepId" class="form-control">
+        <option value="">-- Не изменять статус --</option>
+
+        <option th:each="step : ${allSteps}"
+                th:value="${step.id}"
+                th:text="${step.name} + ' (' + ${step.description} + ')'">
+        </option>
+      </select>
+
+      <small class="form-text">
+        Выберите новый статус из списка. При сохранении будет создана связь с шагом покупки.
+      </small>
     </div>
 
     <div class="form-group">
@@ -35,6 +58,7 @@
 
     <div class="button-group">
       <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+      <a th:href="@{/buys}" class="btn btn-secondary">Отмена</a>
     </div>
   </form>
 </div>

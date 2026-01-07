@@ -1,5 +1,6 @@
 package com.alexxx2k.springproject.controller;
 
+import com.alexxx2k.springproject.domain.dto.Buy;
 import com.alexxx2k.springproject.domain.dto.BuyProduct;
 import com.alexxx2k.springproject.service.BuyProductService;
 import com.alexxx2k.springproject.service.BuyService;
@@ -113,12 +114,24 @@ public class BuyProductController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public String showAddProductForm(@PathVariable Long buyId, Model model) {
         try {
+            Buy buy = buyService.getBuyById(buyId)
+                    .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
+
+            String status = buyService.getStepNameByBuyStepId(buy.buyStepId());
+
+            if (status.contains("Оплачен") || status.contains("Завершен")) {
+                model.addAttribute("message", "❌ Этот заказ оплачен, редактирование невозможно");
+                model.addAttribute("messageType", "error");
+                return "redirect:/buy-products/by-buy/" + buyId;
+            }
+
             model.addAttribute("buyId", buyId);
-            model.addAttribute("buy", buyService.getBuyById(buyId).orElse(null));
+            model.addAttribute("buy", buy);
             model.addAttribute("products", productService.getAllProducts());
             return "addProductToBuy";
+
         } catch (Exception e) {
-            model.addAttribute("message", "Ошибка: " + e.getMessage());
+            model.addAttribute("message", "❌ Ошибка: " + e.getMessage());
             model.addAttribute("messageType", "error");
             return "redirect:/buy-products/by-buy/" + buyId;
         }
