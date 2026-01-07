@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
-class DeliveryTimeCalculatorSimpleTest {
+class DeliveryTimeCalculatorTest {
 
     @Test
     void getMinutes_ShouldReturnNull_WhenException() throws Exception {
@@ -20,5 +20,12 @@ class DeliveryTimeCalculatorSimpleTest {
 
             assertNull(result);
         }
+    }
+
+    @Test
+    void getMinutes_allGood() throws Exception {
+        Long result = DeliveryTimeCalculator.getMinutes("Москва");
+
+        assertEquals(512, result);
     }
 }
