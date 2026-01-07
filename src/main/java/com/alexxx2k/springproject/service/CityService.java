@@ -76,12 +76,14 @@ public class CityService {
             Long minutes = DeliveryTimeCalculator.getMinutes(cityName);
 
             if (minutes == null) {
-                throw new RuntimeException("Не удалось рассчитать время доставки для города: " + cityName);
+                throw new RuntimeException("Не удалось рассчитать время доставки для города: " + cityName + ". Города не существует или мы не осуществляем доставку в него");
             }
 
             Long days = minutes / (60 * 8);
             return days > 0 ? days : 1;
 
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при расчете времени доставки: " + e.getMessage());
         }
