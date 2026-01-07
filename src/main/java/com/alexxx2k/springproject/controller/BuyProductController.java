@@ -201,7 +201,7 @@ public class BuyProductController {
         }
     }
 
-    private List<BuyProductService.CartItem> parseProductIds(String productIds) {
+    List<BuyProductService.CartItem> parseProductIds(String productIds) {
         List<BuyProductService.CartItem> items = new ArrayList<>();
 
         if (productIds == null || productIds.trim().isEmpty()) {
