@@ -74,9 +74,17 @@ public class ProductController {
                 throw new IllegalArgumentException("Название продукта не может быть пустым");
             }
 
-            Product productDto = Product.forCreation(categoryId, mythologyId, name.trim(),
-                    price, description != null ? description : "",
-                    pic != null ? pic : "");
+            Product productDto = new Product(
+                    null,
+                    categoryId,
+                    null,
+                    mythologyId,
+                    null,
+                    name.trim(),
+                    price,
+                    description != null ? description : "",
+                    pic != null ? pic : ""
+            );
             productService.createProduct(productDto);
             redirectAttributes.addFlashAttribute("message", "Продукт успешно добавлен!");
             redirectAttributes.addFlashAttribute("messageType", "success");
